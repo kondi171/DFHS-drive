@@ -10,9 +10,15 @@ const MainPage = () => {
   }, []);
 
   return (
-    <main className="main-page">
+    <main className="access-page">
       <h2><span>{user}</span> repository</h2>
-      <div className="breadcrumbs">main - subfolder - file1</div>
+      <div className="breadcrumbs">
+        <span>main</span>
+        <span>•</span>
+        <span>subfolder</span>
+        <span>•</span>
+        <span>file1</span>
+      </div>
       <div className="files">
         <div className="data">
           <i className="fa fa-folder" aria-hidden="true"></i>

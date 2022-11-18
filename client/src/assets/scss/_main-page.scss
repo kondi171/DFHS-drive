@@ -1,4 +1,4 @@
-.main-page {
+.access-page {
   background-image: url('./../img/denim.webp');
 
   h2 {
@@ -15,10 +15,31 @@
   }
 
   .breadcrumbs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 1rem;
-    text-align: center;
-    font-size: 2rem;
-    font-family: $titleFont;
+    transition-duration: .4s;
+
+    span {
+      font-size: 2rem;
+      font-family: $titleFont;
+      padding: 10px;
+
+      &:last-of-type {
+        color: $primaryColor;
+      }
+
+      &:nth-of-type(odd) {
+        transition-duration: .4s;
+
+        &:hover {
+          cursor: pointer;
+          color: $secondaryColor;
+        }
+
+      }
+    }
   }
 
   .files {
@@ -67,6 +88,11 @@
       span {
         color: $lightColor;
         font-size: 24px;
+
+        span {
+          color: $primaryColor;
+          font-weight: bold;
+        }
       }
     }
   }
