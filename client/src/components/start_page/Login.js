@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
-
 const Login = () => {
 
   const [logged, setLogged] = useState(false);
