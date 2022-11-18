@@ -1,0 +1,118 @@
+.start-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+}
+
+form {
+  position: relative;
+  width: 50vw;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: $darkColor;
+  border-radius: 10px;
+  box-shadow: 2px -2px 5px 0px $primaryColor;
+  animation: infinite 4s ease-in-out boxShadow;
+
+  h2 {
+    color: $primaryColor;
+    font-size: 48px;
+    margin-top: 100px;
+    margin-bottom: 50px;
+    font-family: $titleFont;
+
+  }
+
+  input {
+    display: block;
+    width: 70%;
+    background-color: transparent !important;
+    border: none;
+    border-bottom: 2px solid $primaryColor;
+    margin: 10px 0;
+    font-size: 24px;
+    outline: none;
+    color: $primaryColor;
+    transition-duration: .4s;
+    appearance: none;
+
+    &:focus {
+      transform: scale(1.1);
+      box-shadow: 0px 10px 10px -10px $primaryColor;
+    }
+  }
+
+  .sign-up {
+    padding: 20px;
+    color: $secondaryColor;
+    font-size: 24px;
+    letter-spacing: 2px;
+
+    a {
+      text-decoration: none;
+      color: $primaryColor;
+      transition-duration: .4s;
+      font-weight: bold;
+      padding-left: 5px;
+
+      &:hover {
+        cursor: pointer;
+        color: $secondaryColor;
+      }
+    }
+  }
+
+  button {
+    width: 250px;
+    height: 50px;
+    background-color: $primaryColor;
+    margin-left: 7.4vw;
+    align-self: flex-start;
+    border-radius: 4px;
+    border: none;
+    position: absolute;
+    bottom: 4vh;
+    color: $darkColor;
+    font-size: 24px;
+    text-align: center;
+    letter-spacing: 2px;
+    font-family: $titleFont;
+    left: 0;
+    transition-duration: .4s;
+
+    &:hover {
+      cursor: pointer;
+      // background-color: $secondaryColor;
+      box-shadow: 0 0 10px 0 $primaryColor;
+      transform: scale(1.1);
+      letter-spacing: 4px;
+    }
+  }
+
+}
+
+@keyframes boxShadow {
+  0% {
+    box-shadow: 2px -2px 5px 0px $primaryColor;
+  }
+
+  25% {
+    box-shadow: 2px 2px 5px 0px $primaryColor;
+  }
+
+  50% {
+    box-shadow: -2px 2px 5px 0px $primaryColor;
+  }
+
+  75% {
+    box-shadow: -2px -2px 5px 0px $primaryColor;
+  }
+
+  100% {
+    box-shadow: 2px -2px 5px 0px $primaryColor;
+  }
+}

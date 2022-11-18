@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Lato:ital,wght@0,300;0,400;1,100;1,700&display=swap');
+@import '_variables.scss';
+@import '_start.scss';
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $primaryFont;
+}
+
+.drive {
+  height: 100vh;
+  width: 100vw;
+  background-color: $bgColor;
+  background-image: url('./../img/denim.webp');
+  border-bottom: 2px solid $primaryColor;
+}
+
+.header {
+  position: fixed;
+  left: 2vw;
+  top: 1vh;
+  font-size: 38px;
+  font-family: $titleFont;
+  color: $supportColor;
+  text-shadow: -2px -2px $primaryColor;
+
+  span {
+    font-size: 54px;
+    font-family: $titleFont;
+    color: $primaryColor;
+    text-shadow: -2px -2px 2px $supportColor,
+      2px 2px 2px $supportColor;
+  }
+}
+
+.message-box {
+  position: fixed;
+  right: 1vw;
+  bottom: 2vh;
+  width: 20vw;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1.1vw;
+  color: $primaryColor;
+  border: 2px solid $primaryColor;
+  box-shadow: 0 0 5px 0 $primaryColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateY(200px) scale(0);
+  transition-duration: .4s;
+  font-weight: bold;
+
+  i {
+    font-size: 36px;
+    margin-right: 10px;
+  }
+
+  &.error {
+    color: $errorColor;
+    border: 2px solid $errorColor;
+    box-shadow: 0 0 5px 0 $errorColor;
+  }
+
+  &.fade {
+    transform: translateY(0) scale(1);
+  }
+}
