@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { AppContext } from "../AppContext";
-
 import axios from 'axios';
-import ContextMenu from "../features/ContextMenu";
-
+import VanillaContextMenu from 'vanilla-context-menu';
 const MainPage = () => {
-
-  const { loggedUser, setLoggedUser, infoAboutUploadedFile, setInfoAboutUploadedFile } = useContext(AppContext);
-
+  const navigate = useNavigate();
+  const { loggedUser, setLoggedUser } = useContext(AppContext);
   const [login, setLogin] = useState('');
+  const [contextMenu, setContextMenu] = useState(null);
   const [contextMenuScope, setContextMenuScope] = useState(null);
   const formats = [
     {
@@ -209,7 +208,6 @@ const MainPage = () => {
       ]
     },
   ];
-
   const checkFileType = type => {
     const fileFormat = formats.map(format => {
       const fileExt = format.extensions.map(ext => {
@@ -222,13 +220,62 @@ const MainPage = () => {
     const excludeUndefined = fileFormat.filter(element => element !== undefined);
     return excludeUndefined[0];
   }
-  const handleContextMenu = (e, file) => {
-    console.log(file);
-    console.log(e.target.dataset.id);
-    // const fileMenuScope = document.querySelector(`[data-id='${e.target.dataset.id]`);
-    // console.log(fileMenuScope);
-    // setContextMenuScope(document.);
+  const vanillaContextMenu = menuItems => {
+    const contextMenu = new VanillaContextMenu({
+      scope: document.querySelector('main'),
+      customThemeClass: 'context-menu',
+      transitionDuration: 300,
+      menuItems: menuItems
+    });
+    setContextMenu(contextMenu);
   }
+  const handleContextMenuOnBody = () => {
+    const menuItems = [
+      {
+        label: 'Create folder',
+        iconClass: 'fa fa-folder-open'
+      }
+    ];
+    vanillaContextMenu(menuItems);
+  }
+  const handleContextMenuOnFile = (e, file) => {
+
+    // console.log(e.target.dataset.id);
+
+    const fileMenuScope = document.querySelector(`[data-id='${e.target.dataset.id}'`).parentElement.parentElement;
+    setContextMenuScope(fileMenuScope);
+    const menuItems = [
+      {
+        label: 'Download',
+        callback: () => console.log('Download'),
+        iconClass: 'fa fa-cloud-download'
+      },
+      'hr',
+      {
+        label: 'Share',
+        callback: () => console.log('Share'),
+        iconClass: 'fa fa-share-alt'
+      },
+      'hr',
+      {
+        label: 'Delete',
+        callback: () => console.log('Delete'),
+        iconClass: 'fa fa-trash'
+      },
+    ];
+    if (file.fileType === '.png') {
+      menuItems.unshift({
+        label: 'Preview',
+        callback: () => {
+          navigate(contextMenuScope.firstChild.nextSibling.getAttribute('href'))
+        },
+        iconClass: 'fa fa-eye'
+      });
+    }
+    vanillaContextMenu(menuItems);
+    setContextMenu(contextMenu);
+  }
+
   const holdSession = () => {
     axios({
       method: 'POST',
@@ -252,7 +299,18 @@ const MainPage = () => {
       const atIndex = loggedUser.mail.indexOf('@');
       setLogin(loggedUser.mail.slice(0, atIndex));
     } else holdSession();
-    // document.addEventListener('contextmenu', event => event.preventDefault());
+    const contextMenu = new VanillaContextMenu({
+      scope: document.querySelector('main'),
+      customThemeClass: 'context-menu',
+      transitionDuration: 300,
+      menuItems: [
+        {
+          label: 'Create folder',
+          iconClass: 'fa fa-folder-open'
+        }
+      ]
+    });
+    setContextMenu(contextMenu);
   }, [loggedUser.mail]);
 
   useEffect(() => {
@@ -264,7 +322,7 @@ const MainPage = () => {
         localStorage.removeItem('infoAboutUploadedFile');
       }, 3000);
     }
-  }, [infoAboutUploadedFile]);
+  }, []);
 
   return (
     <main className="access-page">
@@ -284,7 +342,7 @@ const MainPage = () => {
           return <div key={fileName} className="data">
             <span className="date">{date}</span>
             <a href={`${process.env.REACT_APP_DB_CONNECT}${filePath}`} target="_blank" rel="noreferrer">
-              <i data-id={id} onContextMenu={e => handleContextMenu(e, file)} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
+              <i data-id={id} onMouseEnter={e => handleContextMenuOnFile(e, file)} onMouseLeave={handleContextMenuOnBody} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
             </a>
             <span className="title">{fileName}</span>
 
@@ -302,10 +360,7 @@ const MainPage = () => {
               <span>{format.format}</span>
             </div>);
         })} */}
-
-
       </div>
-      {/* <ContextMenu scope={contextMenuScope} /> */}
       <div className='message-box'><i className="fa fa-check-circle" aria-hidden="true"></i>File was uploaded!</div>
     </main >
   );
