@@ -10,6 +10,9 @@ client/package.json
 server/package.json
 client/node_modules/
 server/node_modules/
+.history
+client/.history
+server/.history
 # testing
 /coverage
 

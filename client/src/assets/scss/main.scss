@@ -4,6 +4,7 @@
 @import '_loading.scss';
 @import '_navigation.scss';
 @import '_main-page.scss';
+@import '_context-menu.scss';
 
 * {
   margin: 0;
@@ -13,11 +14,12 @@
 }
 
 .drive {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
   background-color: $bgColor;
   background-image: url('./../img/denim.webp');
+  background-blend-mode: overlay;
   border-bottom: 2px solid $primaryColor;
+  overflow-x: hidden;
 }
 
 .header {
@@ -42,7 +44,6 @@
   position: fixed;
   right: 1vw;
   bottom: 2vh;
-  width: 20vw;
   border-radius: 8px;
   padding: 10px;
   font-size: 1.1vw;
@@ -50,11 +51,18 @@
   border: 2px solid $primaryColor;
   box-shadow: 0 0 5px 0 $primaryColor;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   transform: translateY(200px) scale(0);
   transition-duration: .4s;
   font-weight: bold;
+
+  span {
+    text-align: center;
+    // padding-left: 10%;
+    width: 80%;
+    font-size: 110%;
+  }
 
   i {
     font-size: 36px;

@@ -1,11 +1,11 @@
 .access-page {
-  background-image: url('./../img/denim.webp');
 
   h2 {
     font-size: 3rem;
     text-align: center;
     padding-top: 2rem;
     font-family: $titleFont;
+    color: $lightColor;
 
     span {
       color: $primaryColor;
@@ -20,6 +20,7 @@
     align-items: center;
     margin-top: 1rem;
     transition-duration: .4s;
+    color: $lightColor;
 
     span {
       font-size: 2rem;
@@ -45,14 +46,32 @@
   .files {
     display: flex;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
     margin-top: 4rem;
     background-color: $darkColor;
     margin: 8rem;
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 2rem;
-    box-shadow: 4px 4px 10px 2px;
+    box-shadow: 0 0 5px 1px $primaryColor;
+    opacity: .8;
+
+    .no-files-message {
+      display: flex;
+      align-items: center;
+      color: $primaryColor;
+      font-size: 250%;
+      font-weight: bold;
+      margin: 30px 20px;
+
+      i {
+        font-size: 350%;
+      }
+
+      span {
+        margin-left: 20px;
+      }
+    }
 
     .data {
       display: flex;
@@ -66,6 +85,50 @@
         padding: 20px;
         transition-duration: .4s;
 
+        &.fa-music {
+          color: #c2af0a;
+        }
+
+        &.fa-archive {
+          color: darken($primaryColor, 20%);
+        }
+
+        &.fa-bullseye {
+          color: #00c3ff;
+        }
+
+        &.fa-database {
+          color: #02e715;
+        }
+
+        &.fa-envelope {
+          color: #8100fa;
+        }
+
+        &.fa-font {
+          color: #ff0037;
+        }
+
+        &.fa-image {
+          color: #00aeff;
+        }
+
+        &.fa-file-code-o {
+          color: #276b25;
+        }
+
+        &.fa-file-powerpoint-o {
+          color: #fd8700;
+        }
+
+        &.fa-film {
+          color: #fd00be;
+        }
+
+        &.fa-file-excel-o {
+          color: #15ff00;
+        }
+
         &.fa-file-text-o {
           color: $secondaryColor;
         }
@@ -74,9 +137,10 @@
           color: $supportColor;
         }
 
-        &.fa-archive {
-          color: darken($primaryColor, 20%);
+        &.fa-cogs {
+          color: #0400ff;
         }
+
 
         &:hover {
           cursor: pointer;
@@ -85,15 +149,63 @@
         }
       }
 
+      .title,
+      .date {
+        color: $lightColor;
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .date {
+        margin-top: 20px;
+        color: $primaryColor;
+      }
+
       span {
         color: $lightColor;
         font-size: 24px;
+        text-align: center;
 
         span {
           color: $primaryColor;
           font-weight: bold;
         }
       }
+    }
+  }
+
+  .add-files {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-form {
+      margin: 2% 25%;
+
+      input {
+        display: block;
+        width: 70%;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid $primaryColor;
+        margin: 10px 0;
+        font-size: 24px;
+        outline: none;
+        color: $primaryColor;
+        transition-duration: .4s;
+        appearance: none;
+
+        &:focus {
+          transform: scale(1.1);
+          box-shadow: 0px 10px 10px -10px $primaryColor;
+        }
+      }
+
+      input[type='file'] {
+        // display: none;
+      }
+
+
     }
   }
 }

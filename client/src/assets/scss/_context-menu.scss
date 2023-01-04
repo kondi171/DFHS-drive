@@ -1,0 +1,15 @@
+.context-menu {
+    background-color: darken($darkColor, 5%);
+    // box-shadow: 1px 1px 3px 1px $secondaryColor;
+    border-radius: 4px;
+
+    div {
+        color: $primaryColor;
+        transition-duration: .3s;
+
+        &:hover {
+            color: darken($darkColor, 5%);
+            background-color: $primaryColor;
+        }
+    }
+}

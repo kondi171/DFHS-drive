@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useContext } from "react";
+import { AppContext } from "../AppContext";
 const SharedPage = () => {
-  const [user, setUser] = useState('');
-  const mail = 'patryk.kaczmarski98@wp.pl';
+  const { loggedUser } = useContext(AppContext);
+
+  const [userMail, setUserMail] = useState('');
+
   useEffect(() => {
-    const atIndex = mail.indexOf('@');
-    setUser(mail.slice(0, atIndex));
+    const atIndex = loggedUser.mail.indexOf('@');
+    setUserMail(loggedUser.mail.slice(0, atIndex));
     // document.addEventListener('contextmenu', event => event.preventDefault());
   }, []);
 
   return (
     <main className="access-page">
-      <h2>Shared to <span>{user}</span></h2>
+      <h2>Shared to <span>{userMail}</span></h2>
       <div className="breadcrumbs">
         <span>main</span>
         <span>•</span>
