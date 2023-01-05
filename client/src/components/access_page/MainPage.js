@@ -247,7 +247,17 @@ const MainPage = () => {
     const menuItems = [
       {
         label: 'Download',
-        callback: () => console.log('Download'),
+        callback: () => {
+          if (file.fileType === '.png') {
+            var link = document.createElement('a');
+            link.href = contextMenuScope.firstChild.nextSibling.getAttribute('href');
+            link.download = 'Download.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+          // else contextMenuScope.firstChild.nextSibling.click()
+        },
         iconClass: 'fa fa-cloud-download'
       },
       'hr',
@@ -259,15 +269,37 @@ const MainPage = () => {
       'hr',
       {
         label: 'Delete',
-        callback: () => console.log('Delete'),
+        callback: () => {
+          console.log(contextMenuScope.dataset.id);
+          axios({
+            method: 'DELETE',
+            url: `${process.env.REACT_APP_DB_CONNECT}API/file/delete`,
+            headers: { 'Content-Type': 'application/json' },
+            data: {
+              mail: localStorage.getItem('mail'),
+              fileID: contextMenuScope.dataset.id
+            }
+          })
+            .catch(error => console.log(error));
+          const deletedFileIndex = loggedUser.files.findIndex(file => file._id === contextMenuScope.dataset.id);
+          loggedUser.files.splice(deletedFileIndex, 1);
+          const messageBox = document.querySelector('.message-box');
+          messageBox.textContent = "File was deleted!";
+          messageBox.classList.add('fade');
+          setTimeout(() => {
+            messageBox.classList.remove('fade');
+            messageBox.textContent = "";
+          }, 3000);
+        },
         iconClass: 'fa fa-trash'
       },
     ];
     if (file.fileType === '.png') {
+      menuItems.unshift('hr');
       menuItems.unshift({
         label: 'Preview',
         callback: () => {
-          navigate(contextMenuScope.firstChild.nextSibling.getAttribute('href'))
+          contextMenuScope.firstChild.nextSibling.click();
         },
         iconClass: 'fa fa-eye'
       });
@@ -275,7 +307,9 @@ const MainPage = () => {
     vanillaContextMenu(menuItems);
     setContextMenu(contextMenu);
   }
-
+  useEffect(() => {
+    console.log(loggedUser.files);
+  }, [loggedUser.files]);
   const holdSession = () => {
     axios({
       method: 'POST',
@@ -293,7 +327,9 @@ const MainPage = () => {
     })
       .catch(error => console.log(error));
   }
-
+  const addFolder = () => {
+    console.log('Hello World!');
+  }
   useEffect(() => {
     if (loggedUser.mail) {
       const atIndex = loggedUser.mail.indexOf('@');
@@ -336,10 +372,10 @@ const MainPage = () => {
       </div>
       <div className="files">
         {Object.keys(loggedUser).length !== 0 ? loggedUser.files.map(file => {
-          const { fileName, fileType, date, filePath } = file;
+          const { _id, fileName, fileType, date, filePath } = file;
           let id = filePath.slice(8, filePath.length);
           const fileClassName = checkFileType(fileType);
-          return <div key={fileName} className="data">
+          return <div data-id={_id} key={fileName} className="data">
             <span className="date">{date}</span>
             <a href={`${process.env.REACT_APP_DB_CONNECT}${filePath}`} target="_blank" rel="noreferrer">
               <i data-id={id} onMouseEnter={e => handleContextMenuOnFile(e, file)} onMouseLeave={handleContextMenuOnBody} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
@@ -360,6 +396,10 @@ const MainPage = () => {
               <span>{format.format}</span>
             </div>);
         })} */}
+      </div>
+      <div className='tooltip'>
+        <i onClick={addFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
+        <span className="tooltip__text">Add folder</span>
       </div>
       <div className='message-box'><i className="fa fa-check-circle" aria-hidden="true"></i>File was uploaded!</div>
     </main >

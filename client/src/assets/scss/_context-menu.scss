@@ -3,6 +3,10 @@
     // box-shadow: 1px 1px 3px 1px $secondaryColor;
     border-radius: 4px;
 
+    hr {
+        background-color: $primaryColor;
+    }
+
     div {
         color: $primaryColor;
         transition-duration: .3s;

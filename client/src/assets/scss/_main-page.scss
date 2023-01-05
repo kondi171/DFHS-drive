@@ -1,4 +1,5 @@
 .access-page {
+  min-height: calc(100vh - 2px);
 
   h2 {
     font-size: 3rem;
@@ -182,6 +183,57 @@
     &-form {
       margin: 2% 25%;
 
+      .folder-select {
+        h3 {
+          font-family: $titleFont;
+          font-size: 5vmin;
+          margin: 2vmin auto;
+          color: $lightColor;
+          text-align: center;
+        }
+
+        .folders {
+          display: flex;
+          justify-content: space-evenly;
+          align-items: center;
+          flex-wrap: wrap;
+          margin: 2vmin auto;
+
+          .folder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 2vmin;
+            min-width: 100px;
+            transition-duration: .4s;
+
+            span {
+              font-size: 3vmin;
+              color: $lightColor;
+            }
+
+            i {
+              transition-duration: .4s;
+              color: $primaryColor;
+              font-size: 7vmin;
+
+              &:hover {
+                cursor: pointer;
+                color: $secondaryColor;
+              }
+            }
+
+            &.active {
+              outline-offset: 10px;
+              border-radius: 5px;
+              outline: 2px solid $primaryColor;
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+
       input {
         display: block;
         width: 70%;
@@ -208,4 +260,36 @@
 
     }
   }
+
+
+
+  @include tooltip($primaryColor, $darkColor, "right");
+
+  .tooltip {
+    position: fixed;
+    bottom: 4vmin;
+    left: 4vmin;
+
+    &__text {
+      transform: scale(0);
+      padding: 2vmin;
+    }
+
+    &__icon {
+      font-size: 4vmax;
+      color: $primaryColor;
+      transition-duration: .4s;
+
+      // &:hover {
+      //   cursor: pointer;
+      //   color: $secondaryColor;
+      // }
+    }
+  }
+
+
+
+
+
+
 }

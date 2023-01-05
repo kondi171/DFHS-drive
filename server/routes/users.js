@@ -12,9 +12,8 @@ app.post('/API/users', userController.loginUser);
 // Get Specific User
 app.get('/API/users/:id', userController.getSpecificUser);
 
-app.post('/API/upload', upload.single('file'), userController.fileUpload);
+app.post('/API/file/upload', upload.single('file'), userController.fileUpload);
 
-app.get('/API/upload/:id', userController.getFiles);
+app.delete('/API/file/delete', userController.deleteFile);
 
-app.get('/', userController.holdSession);
 module.exports = app;

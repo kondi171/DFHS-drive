@@ -9,7 +9,7 @@ const ContextMenu = ({ scope }) => {
     menuItems: [
       {
         label: 'Preview',
-        // callback: () => handlePreview(),
+        callback: () => console.log(scope),
         iconClass: 'fa fa-eye'
       },
       {

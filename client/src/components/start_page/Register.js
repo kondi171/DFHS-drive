@@ -94,7 +94,9 @@ const Register = () => {
         .catch(error => console.log(error));
     }
   }
-
+  useEffect(() => {
+    if (localStorage.getItem('mail')) navigate('/access/home');
+  }, []);
   return (
     <div className="start-page">
       <form>

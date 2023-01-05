@@ -1,0 +1,105 @@
+@mixin tooltip ($color, $bgColor, $direction) {
+  .tooltip {
+    position: relative;
+
+    &__text {
+      position: absolute;
+      width: 370%;
+
+      @if ($direction =="right") {
+        top: 0;
+        bottom: 0;
+        margin: auto 0;
+        left: 120%;
+      }
+
+      @if ($direction =="left") {
+        top: 0;
+        bottom: 0;
+        margin: auto 0;
+        right: 120%;
+      }
+
+      @if ($direction =="top") {
+        bottom: 120%;
+        left: -10%;
+        right: 0;
+        margin: 0 auto;
+      }
+
+      @if ($direction =="bottom") {
+        top: 140%;
+        left: -140%;
+      }
+
+      text-align: center;
+      transform: scale(0);
+      background-color: $bgColor;
+      color: $color;
+      text-align: center;
+      padding: 20% 60%;
+      border-radius: 6px;
+      font-size: 2rem;
+      z-index: 1;
+      transition-duration: .4s;
+
+      &::after {
+        content: "";
+        position: absolute;
+
+        @if ($direction =="right") {
+          top: 50%;
+          right: 100%;
+          border-style: solid;
+          border-color: transparent $bgColor transparent transparent;
+        }
+
+        @if ($direction =="left") {
+          top: 50%;
+          left: 100%;
+          border-color: transparent transparent transparent $bgColor;
+        }
+
+        @if ($direction =="top") {
+          top: 120%;
+          left: 40%;
+          right: 40%;
+          margin: 0 auto;
+          border-color: $bgColor transparent transparent transparent;
+        }
+
+        @if ($direction =="bottom") {
+          bottom: 100%;
+          left: 40%;
+          right: 40%;
+          margin: 0 auto;
+          border-color: transparent transparent $bgColor transparent;
+        }
+
+        margin-top: -15px;
+        border-width: 15px;
+        border-style: solid;
+      }
+    }
+
+    &__icon {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    &:hover .tooltip__text {
+      transform: scale(0.8);
+    }
+  }
+
+  // *** HTML *** 
+  // <div className='tooltip'>
+  //    <i className='fa fa-icon tooltip__icon' aria-hidden="true"></i>
+  //    <span className="tooltip__text">Home</span>
+  // </div>
+
+  // *** SCSS *** 
+  // insert @include directive to parent element
+  // @include tooltip($primaryColor, $darkColor, "bottom");
+}

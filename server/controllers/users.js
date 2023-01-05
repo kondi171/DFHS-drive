@@ -1,14 +1,5 @@
 const bcrypt = require("bcryptjs");
 const userModel = require('../models/users');
-const passport = require('passport');
-const initializePassport = require('./../config/passport-config');
-const user = {
-  mail: null,
-  password: null
-}
-
-initializePassport(passport,
-  user.mail);
 
 exports.addUser = async (req, res) => {
   const { mail, password } = req.body;
@@ -39,9 +30,6 @@ exports.loginUser = async (req, res) => {
   // } else res.send('Incorrect data!');
 }
 
-exports.holdSession = async (req, res) => {
-
-}
 
 exports.getSpecificUser = async (req, res) => {
 
@@ -75,10 +63,19 @@ exports.fileUpload = async (req, res) => {
   }
 }
 
-exports.getFiles = async (req, res) => {
-  const mail = req.body.mail;
-  const files = await userModel.find({ mail: mail });
-  console.log(files.files);
+exports.deleteFile = async (req, res) => {
+  const { mail, fileID } = req.body;
+  console.log(fileID);
+  const userFile = await userModel.updateOne(
+    { mail: mail },
+    { $pull: { files: { _id: fileID } } }
+  );
+  console.log(userFile);
+  try {
+    res.send(userFile);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
 
 const cutFileType = filename => {

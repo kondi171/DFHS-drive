@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Lato:ital,wght@0,300;0,400;1,100;1,700&display=swap');
 @import '_variables.scss';
+@import '_mixins.scss';
 @import '_start.scss';
 @import '_loading.scss';
 @import '_navigation.scss';
@@ -14,12 +15,34 @@
 }
 
 .drive {
-  min-height: 100vh;
   background-color: $bgColor;
   background-image: url('./../img/denim.webp');
   background-blend-mode: overlay;
   border-bottom: 2px solid $primaryColor;
   overflow-x: hidden;
+}
+
+::selection {
+  background-color: $primaryColor;
+  color: $darkColor;
+}
+
+body::-webkit-scrollbar {
+  width: 15px;
+  background-color: $darkColor;
+
+  &-thumb {
+    background: $primaryColor;
+    transition-duration: .4s;
+    border-radius: 100vw;
+    border: 3px solid $darkColor;
+    transition-duration: .4s;
+
+    &:hover {
+      cursor: pointer;
+      background: $secondaryColor;
+    }
+  }
 }
 
 .header {
@@ -30,6 +53,7 @@
   font-family: $titleFont;
   color: $supportColor;
   text-shadow: -2px -2px $primaryColor;
+  z-index: 10;
 
   span {
     font-size: 54px;
