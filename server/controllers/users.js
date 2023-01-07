@@ -37,7 +37,6 @@ exports.getSpecificUser = async (req, res) => {
 exports.fileUpload = async (req, res) => {
   const mail = req.body.mail;
   const folderName = req.body.folder;
-  console.log(folderName);
   const file = req.file;
   const fileType = cutFileType(file.originalname);
   const fileName = file.originalname.replace(cutFileType(fileType), '')

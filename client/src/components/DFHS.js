@@ -2,7 +2,7 @@ import "./../assets/scss/main.scss";
 import { Routes, Route } from 'react-router-dom';
 import Login from "./start_page/Login";
 import Register from "./start_page/Register";
-import MainPage from "./access_page/MainPage";
+import MainPage from "./access_page/home/MainPage";
 import NavOutlet from "./access_page/NavOutlet";
 import SharedPage from "./access_page/SharedPage";
 import AddFilesPage from "./access_page/AddFilesPage";

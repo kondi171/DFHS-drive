@@ -1,0 +1,200 @@
+[
+  {
+    "format": "audio",
+    "className": "music",
+    "extensions": [
+      ".aif",
+      ".cda",
+      ".mid",
+      ".midi",
+      ".mp3",
+      ".mpa",
+      ".ogg",
+      ".wav",
+      ".wma",
+      ".wpl"
+    ]
+  },
+  {
+    "format": "compressed",
+    "className": "archive",
+    "extensions": [
+      ".7z",
+      ".arj",
+      ".deb",
+      ".pkg",
+      ".rar",
+      ".rpm",
+      ".z",
+      ".zip"
+    ]
+  },
+  {
+    "format": "disc",
+    "className": "bullseye",
+    "extensions": [
+      ".bin",
+      ".dmg",
+      ".iso",
+      ".toast",
+      ".vcd"
+    ]
+  },
+  {
+    "format": "database",
+    "className": "database",
+    "extensions": [
+      ".csv",
+      ".dat",
+      ".db",
+      ".dbf",
+      ".log",
+      ".mdb",
+      ".sav",
+      ".sql",
+      ".tar",
+      ".json",
+      ".xml"
+    ]
+  },
+  {
+    "format": "e-mail",
+    "className": "envelope",
+    "extensions": [
+      ".email",
+      ".eml",
+      ".emlx",
+      ".msg",
+      ".oft",
+      ".ost",
+      ".pst",
+      ".vcf"
+    ]
+  },
+  {
+    "format": "executable",
+    "className": "cogs",
+    "extensions": [
+      ".apk",
+      ".bat",
+      ".bin",
+      ".cgi",
+      ".pl",
+      ".com",
+      ".exe",
+      ".gadget",
+      ".jar",
+      ".msi",
+      ".wsf"
+    ]
+  },
+  {
+    "format": "font",
+    "className": "font",
+    "extensions": [
+      ".fnt",
+      ".fon",
+      ".otf",
+      ".ttf"
+    ]
+  },
+  {
+    "format": "image",
+    "className": "image",
+    "extensions": [
+      ".ai",
+      ".bmp",
+      ".gif",
+      ".ico",
+      ".jpeg",
+      ".jpg",
+      ".png",
+      ".ps",
+      ".psd",
+      ".svg",
+      ".tif",
+      ".tiff",
+      ".webp"
+    ]
+  },
+  {
+    "format": "programming",
+    "className": "file-code-o",
+    "extensions": [
+      ".html",
+      ".htm",
+      ".js",
+      ".css",
+      ".scss",
+      ".sass",
+      ".php",
+      ".jsp",
+      ".java",
+      ".py",
+      ".c",
+      ".cpp",
+      ".cs",
+      ".h",
+      ".sh",
+      ".class",
+      ".swift",
+      ".vb"
+    ]
+  },
+  {
+    "format": "presentation",
+    "className": "file-powerpoint-o",
+    "extensions": [
+      ".key",
+      ".odp",
+      ".pps",
+      ".ppt",
+      ".pptx"
+    ]
+  },
+  {
+    "format": "spreadsheet",
+    "className": "file-excel-o",
+    "extensions": [
+      ".ods",
+      ".xls",
+      ".xlsm",
+      ".xlsx"
+    ]
+  },
+  {
+    "format": "video",
+    "className": "film",
+    "extensions": [
+      ".3g2",
+      ".3gp",
+      ".avi",
+      ".flv",
+      ".h264",
+      ".m4v",
+      ".mkv",
+      ".mov",
+      ".mp4",
+      ".mpg",
+      ".mpeg",
+      ".rm",
+      ".swf",
+      ".vob",
+      ".wmv"
+    ]
+  },
+  {
+    "format": "word/text",
+    "className": "file-text-o",
+    "extensions": [
+      ".doc",
+      ".docx",
+      ".odt",
+      ".pdf",
+      ".rtf",
+      ".tex",
+      ".txt",
+      ".wpd"
+    ]
+  }
+]
