@@ -14,6 +14,8 @@ app.get('/API/users/:id', userController.getSpecificUser);
 
 app.post('/API/file/upload', upload.single('file'), userController.fileUpload);
 
+app.post('/API/folder/add', userController.addFolder);
+
 app.delete('/API/file/delete', userController.deleteFile);
 
 module.exports = app;

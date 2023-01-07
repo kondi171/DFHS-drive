@@ -10,12 +10,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  files: [
+  folders: [
     {
-      fileName: String,
-      fileType: String,
-      date: String,
-      filePath: String,
+      folderName: {
+        type: String,
+        default: 'Main',
+        required: true,
+      },
+      files: [
+        {
+          fileName: String,
+          fileType: String,
+          date: String,
+          filePath: String,
+        }
+      ]
     }
   ]
 });

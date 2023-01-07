@@ -36,45 +36,54 @@ exports.getSpecificUser = async (req, res) => {
 
 exports.fileUpload = async (req, res) => {
   const mail = req.body.mail;
+  const folderName = req.body.folder;
+  console.log(folderName);
   const file = req.file;
   const fileType = cutFileType(file.originalname);
   const fileName = file.originalname.replace(cutFileType(fileType), '')
   const today = new Date();
   const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
   const user = await userModel.updateOne(
-    { mail: mail },
-    {
-      $push: {
-        files: {
-          fileName: fileName,
-          fileType: fileType,
-          date: date,
-          filePath: file.path
-        }
-      }
-    }
-  );
+    { mail: mail, 'folders.folderName': folderName },
+    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
+  )
+
   res.redirect('http://localhost:3000/access/home');
-  // try {
-  //   res.send(user);
-  // } catch (error) {
-  //   res.status(500).send(error);
-  // }
 }
 
 exports.deleteFile = async (req, res) => {
   const { mail, fileID } = req.body;
-  console.log(fileID);
   const userFile = await userModel.updateOne(
     { mail: mail },
     { $pull: { files: { _id: fileID } } }
   );
-  console.log(userFile);
   try {
     res.send(userFile);
   } catch (error) {
     res.status(500).send(error);
   }
+}
+
+exports.addFolder = async (req, res) => {
+  const { mail, folderName } = req.body;
+  const user = await userModel.findOne({ mail: mail });
+  const folders = user.folders.filter(folder => folder.folderName === folderName);
+
+  if (folders.length === 0) {
+    const user = await userModel.updateOne(
+      { mail: mail },
+      {
+        $push: {
+          folders: {
+            folderName: folderName,
+            files: []
+          }
+        }
+      });
+    res.send(true);
+  }
+  else res.send(false);
+
 }
 
 const cutFileType = filename => {
