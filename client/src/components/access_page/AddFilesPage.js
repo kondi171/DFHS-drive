@@ -23,7 +23,7 @@ const AddFilesPage = () => {
       .catch(error => console.log(error));
   }
 
-  const setInfoAboutUploadedFile = () => { localStorage.setItem('infoAboutUploadedFile', 'File was Uploaded!') }
+  const setInfoAboutUploadedFile = () => { localStorage.setItem('infoAboutUploadedFile', true) }
   const handleSelectFolder = e => {
     const folders = document.querySelectorAll('.folder');
     folders.forEach(folder => folder.classList.remove('active'));

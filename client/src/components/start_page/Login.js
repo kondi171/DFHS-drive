@@ -1,35 +1,23 @@
 import { useState, useContext, useEffect } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../AppContext';
-
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
   const navigate = useNavigate();
   const { loggedUser, setLoggedUser } = useContext(AppContext);
 
-  const messageBox = [
-    {
-      icon: <i className="fa fa-exclamation-circle" aria-hidden="true"></i>,
-      message: 'Incorect Data!',
-      type: 'error'
-    },
-    {
-      icon: <i className="fa fa-check-circle" aria-hidden="true"></i>,
-      message: 'Logged!',
-      type: 'success'
-    }
-  ];
-  const [messageIndex, setMessageIndex] = useState(0)
-
+  const notify = message => {
+    return toast.error(message, {
+      theme: 'colored'
+    });
+  }
   const [mailValue, setMailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const handleLogin = e => {
-    const messageBox = document.querySelector('.message-box');
-    messageBox.classList.add('fade');
-    setTimeout(() => {
-      messageBox.classList.remove('fade');
-    }, 3000);
+
     axios({
       method: 'POST',
       url: `${process.env.REACT_APP_DB_CONNECT}API/users`,
@@ -40,7 +28,7 @@ const Login = () => {
       }
     }).then(data => {
       const { mail, password } = data.data;
-      if (data.data === 'Incorrect data!') setMessageIndex(0);
+      if (data.data === 'Incorrect data!') notify('Incorect data!');
       else {
         navigate('/loading', { state: { infoMessage: 'Logged!', loadingMessage: 'Preparing your files', location: '/access/home' } });
         localStorage.setItem('mail', mail);
@@ -67,8 +55,7 @@ const Login = () => {
         </div>
         <button onClick={handleLogin}>Login</button>
       </form>
-      <div className={`message-box ${messageBox[messageIndex].type === 'error' ? 'error' : 'fade'}`}>{messageBox[messageIndex].icon}{messageBox[messageIndex].message}</div>
-
+      <ToastContainer position="bottom-right" />
     </div>
   );
 }

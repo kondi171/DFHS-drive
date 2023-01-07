@@ -1,12 +1,7 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const passport = require('passport');
 const PORT = process.env.PORT || 4000;
 const app = express();
 const usersRouter = require('./routes/users');
@@ -37,15 +32,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/uploads', express.static('uploads'));
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 const username = "Webking";
 const password = "WULkruXttcFwptGS";

@@ -1,34 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Register = () => {
+  const notify = message => {
+    return toast.error(message, {
+      theme: 'colored'
+    });
+  }
 
   const navigate = useNavigate();
-  const messageBox = [
-    {
-      icon: <i className="fa fa-exclamation-circle" aria-hidden="true"></i>,
-      message: 'Mail must meet the conditions of name@domain.country_code ',
-      type: 'error'
-    },
-    {
-      icon: <i className="fa fa-exclamation-circle" aria-hidden="true"></i>,
-      message: 'Minimum eight characters, at least one letter, one number and one special character',
-      type: 'error'
-    },
-    {
-      icon: <i className="fa fa-exclamation-circle" aria-hidden="true"></i>,
-      message: 'Passwords must be equal',
-      type: 'error'
-    },
-    {
-      icon: <i className="fa fa-exclamation-circle" aria-hidden="true"></i>,
-      message: 'The specified user already exists!',
-      type: 'error'
-    },
-  ];
 
-  const [messageIndex, setMessageIndex] = useState(0);
   const [mailValue, setMailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
 
@@ -39,7 +23,7 @@ const Register = () => {
     if (mailValidate) {
       return true;
     } else {
-      setMessageIndex(0);
+      notify('Mail must meet the conditions of name@domain.country_code');
       return false;
     }
   }
@@ -50,7 +34,7 @@ const Register = () => {
     if (pass1Validate) {
       return true;
     } else {
-      setMessageIndex(1);
+      notify('Minimum eight characters, at least one letter, one number and one special character');
       return false;
     }
   }
@@ -59,26 +43,20 @@ const Register = () => {
     const pass2 = document.getElementById('pass2').value;
     if (pass1 === pass2) return true;
     else {
-      setMessageIndex(2);
+      notify('Passwords must be equal');
       return false;
     }
   }
   const handleRegister = e => {
     e.preventDefault();
-    const messageBox = document.querySelector('.message-box');
-    messageBox.classList.add('fade');
 
     const pass2 = validatePass2();
     const pass1 = validatePass1();
     const mail = validateMail();
 
-    setTimeout(() => {
-      messageBox.classList.remove('fade');
-    }, 3000);
     if (mail && pass1 && pass2) {
       axios({
         method: 'PUT',
-        // url: `${process.env.API_DOMAIN}/API/users`,
         url: `${process.env.REACT_APP_DB_CONNECT}API/users`,
         headers: { 'Content-Type': 'application/json' },
         data: {
@@ -86,7 +64,7 @@ const Register = () => {
           password: passwordValue
         }
       }).then(data => {
-        if (data.data === 'The specified user already exists!') setMessageIndex(3);
+        if (data.data === 'The specified user already exists!') notify('The specified user already exists!');
         else {
           navigate('/loading', { state: { infoMessage: 'Your Account has been created!', loadingMessage: 'Preparing your account repository', location: '/login' } });
         }
@@ -94,9 +72,11 @@ const Register = () => {
         .catch(error => console.log(error));
     }
   }
+
   useEffect(() => {
     if (localStorage.getItem('mail')) navigate('/access/home');
   }, []);
+
   return (
     <div className="start-page">
       <form>
@@ -109,7 +89,7 @@ const Register = () => {
         </div>
         <button onClick={handleRegister}>Register</button>
       </form>
-      <div className={`message-box ${messageBox[messageIndex].type === 'error' ? 'error' : 'fade'}`}>{messageBox[messageIndex].icon}{messageBox[messageIndex].message}</div>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 }

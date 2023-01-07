@@ -1,8 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from "../AppContext";
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import VanillaContextMenu from 'vanilla-context-menu';
+
+import 'react-toastify/dist/ReactToastify.css';
 const MainPage = () => {
   const navigate = useNavigate();
   const { loggedUser, setLoggedUser } = useContext(AppContext);
@@ -124,7 +127,8 @@ const MainPage = () => {
         '.psd',
         '.svg',
         '.tif',
-        '.tiff'
+        '.tiff',
+        '.webp',
       ]
     },
     {
@@ -206,8 +210,14 @@ const MainPage = () => {
         '.txt',
         '.wpd'
       ]
-    },
+    }
   ];
+  const notify = message => {
+    return toast.success(message, {
+      theme: 'colored',
+      autoClose: 2500,
+    });
+  }
   const checkFileType = type => {
     const fileFormat = formats.map(format => {
       const fileExt = format.extensions.map(ext => {
@@ -218,7 +228,8 @@ const MainPage = () => {
       return excludeNulls[0];
     });
     const excludeUndefined = fileFormat.filter(element => element !== undefined);
-    return excludeUndefined[0];
+    if (excludeUndefined.length === 0) return 'file-o';
+    else return excludeUndefined[0];
   }
   const vanillaContextMenu = menuItems => {
     const contextMenu = new VanillaContextMenu({
@@ -283,13 +294,7 @@ const MainPage = () => {
             .catch(error => console.log(error));
           const deletedFileIndex = loggedUser.files.findIndex(file => file._id === contextMenuScope.dataset.id);
           loggedUser.files.splice(deletedFileIndex, 1);
-          const messageBox = document.querySelector('.message-box');
-          messageBox.textContent = "File was deleted!";
-          messageBox.classList.add('fade');
-          setTimeout(() => {
-            messageBox.classList.remove('fade');
-            messageBox.textContent = "";
-          }, 3000);
+          notify('File was deleted');
         },
         iconClass: 'fa fa-trash'
       },
@@ -350,13 +355,9 @@ const MainPage = () => {
   }, [loggedUser.mail]);
 
   useEffect(() => {
-    const messageBox = document.querySelector('.message-box');
-    if (localStorage.getItem('infoAboutUploadedFile') === 'File was Uploaded!') {
-      messageBox.classList.add('fade');
-      setTimeout(() => {
-        messageBox.classList.remove('fade');
-        localStorage.removeItem('infoAboutUploadedFile');
-      }, 3000);
+    if (localStorage.getItem('infoAboutUploadedFile')) {
+      notify('File was uploaded');
+      localStorage.removeItem('infoAboutUploadedFile');
     }
   }, []);
 
@@ -401,7 +402,7 @@ const MainPage = () => {
         <i onClick={addFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
         <span className="tooltip__text">Add folder</span>
       </div>
-      <div className='message-box'><i className="fa fa-check-circle" aria-hidden="true"></i>File was uploaded!</div>
+      <ToastContainer position="bottom-right" />
     </main >
   );
 }

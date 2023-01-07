@@ -20,7 +20,6 @@ exports.addUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   const { mail, password } = req.body;
   const user = await userModel.find({ mail: mail, password: password });
-  user.mail = req.session.mail = mail;
   if (user.length > 0) res.send(user[0]);
   else res.send('Incorrect data!');
   // Hashed password login
@@ -56,11 +55,11 @@ exports.fileUpload = async (req, res) => {
     }
   );
   res.redirect('http://localhost:3000/access/home');
-  try {
-    res.send(user);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+  // try {
+  //   res.send(user);
+  // } catch (error) {
+  //   res.status(500).send(error);
+  // }
 }
 
 exports.deleteFile = async (req, res) => {

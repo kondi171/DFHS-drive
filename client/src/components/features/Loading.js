@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Loading = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [dots, setDots] = useState('');
+  const [init, setInit] = useState(false);
+  const notify = message => {
+    return toast.success(message, {
+      theme: 'colored',
+      autoClose: 2500,
+    });
+  }
 
   useEffect(() => {
-    const messageBox = document.querySelector('.message-box');
-    messageBox.classList.add('fade');
-    setTimeout(() => {
-      messageBox.classList.remove('fade');
-    }, 20);
+    if (init) notify(location.state.infoMessage, 'success');
+  }, [init, location]);
+  useEffect(() => {
+    setInit(true);
     setTimeout(() => {
       navigate(location.state.location);
-    }, 30);
+    }, 3000);
   }, [navigate, location]);
 
   useEffect(() => {
@@ -33,10 +40,7 @@ const Loading = () => {
       <div className='loading__spinner--two'></div>
       <div className='loading__spinner--three'></div>
       <div className='loading__text'>{location.state.loadingMessage}<span>{dots}</span></div>
-      <div className='message-box fade'>
-        <i className="fa fa-check-circle" aria-hidden="true"></i>
-        <span>{location.state.infoMessage}</span>
-      </div>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
