@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../AppContext";
 import axios from 'axios';
-import FolderHandler, { handleFolderModal } from "./FolderHandler";
+import FolderModal, { handleFolderModal } from "./FolderModal";
 import VanillaContextMenu from 'vanilla-context-menu';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,7 +13,8 @@ const MainPage = () => {
   const [contextMenu, setContextMenu] = useState(null);
   const [contextMenuScope, setContextMenuScope] = useState(null);
   const [folderIndex, setFolderIndex] = useState(0);
-
+  const [folderOperation, setFolderOperation] = useState('');
+  const [clickedFolderName, setClickedFolderName] = useState('');
   const notify = (message, type) => {
     switch (type) {
       case 'error':
@@ -47,16 +48,14 @@ const MainPage = () => {
   const holdSession = () => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_DB_CONNECT}API/users`,
+      url: `${process.env.REACT_APP_DB_CONNECT}API/user`,
       headers: { 'Content-Type': 'application/json' },
       data: {
         mail: localStorage.getItem('mail'),
-        password: localStorage.getItem('password'),
       }
     }).then(data => {
-      const { mail, password } = data.data;
+      const { mail } = data.data;
       localStorage.setItem('mail', mail);
-      localStorage.setItem('password', password);
       setLoggedUser(data.data);
     })
       .catch(error => console.log(error));
@@ -79,7 +78,10 @@ const MainPage = () => {
       {
         label: 'Create folder',
         iconClass: 'fa fa-folder-open',
-        callback: () => handleFolderModal()
+        callback: () => {
+          handleFolderModal();
+          setFolderOperation('ADD');
+        }
       }
     ];
     vanillaContextMenu(menuItems);
@@ -117,7 +119,7 @@ const MainPage = () => {
           console.log(contextMenuScope.dataset.id);
           axios({
             method: 'DELETE',
-            url: `${process.env.REACT_APP_DB_CONNECT}API/file/delete`,
+            url: `${process.env.REACT_APP_DB_CONNECT}API/file`,
             headers: { 'Content-Type': 'application/json' },
             data: {
               mail: localStorage.getItem('mail'),
@@ -149,15 +151,24 @@ const MainPage = () => {
   const handleContextMenuOnFolder = (e, folder) => {
     const fileMenuScope = document.querySelector('.files');
     setContextMenuScope(fileMenuScope);
+    setClickedFolderName(folder.folderName);
     const menuItems = [
       {
         label: 'Rename folder',
         iconClass: 'fa fa-refresh',
+        callback: () => {
+          handleFolderModal();
+          setFolderOperation('RENAME');
+        }
       },
       'hr',
       {
         label: 'Delete folder',
         iconClass: 'fa fa-trash',
+        callback: () => {
+          handleFolderModal();
+          setFolderOperation('DELETE');
+        }
       }
 
     ];
@@ -169,6 +180,10 @@ const MainPage = () => {
     const folderIndex = loggedUser.folders.findIndex(folder => folder.folderName === folderName);
     setFolderIndex(folderIndex);
     // const folder = loggedUser.folders.findIndex()
+  }
+  const handleAddFolder = () => {
+    handleFolderModal();
+    setFolderOperation('ADD');
   }
   useEffect(() => {
     if (localStorage.getItem('infoAboutUploadedFile')) {
@@ -186,7 +201,10 @@ const MainPage = () => {
         {
           label: 'Create folder',
           iconClass: 'fa fa-folder-open',
-          callback: () => handleFolderModal()
+          callback: () => {
+            handleFolderModal();
+            setFolderOperation('ADD');
+          }
         }
       ]
     });
@@ -199,19 +217,21 @@ const MainPage = () => {
       setLogin(loggedUser.mail.slice(0, atIndex));
     } else holdSession();
   }, [loggedUser.mail]);
-
+  useEffect(() => {
+    console.log(folderOperation);
+  }, [folderOperation]);
 
 
   return (
     <main className="access-page">
       <h2><span>{login}</span> repository</h2>
-      <div className="breadcrumbs">
-        <span onClick={() => setFolderIndex(0)}>Main</span>
-        {folderIndex !== 0 && <>
-          <span>•</span>
+      {folderIndex !== 0 &&
+        <div className="breadcrumbs">
+          <span onClick={() => setFolderIndex(0)}>Main</span>
+          <span>&gt;</span>
           <span>{loggedUser.folders[folderIndex].folderName}</span>
-        </>}
-      </div>
+        </div>
+      }
       <div className="files">
         {folderIndex === 0 && <>
           {Object.keys(loggedUser).length !== 0 && loggedUser.folders.map((folder, index) => {
@@ -222,19 +242,23 @@ const MainPage = () => {
               <span>{folderName}</span>
             </div>
           })}</>}
-        {Object.keys(loggedUser).length !== 0 ? loggedUser.folders[folderIndex].files.map(file => {
-          const { _id, fileName, fileType, date, filePath } = file;
-          let id = filePath.slice(8, filePath.length);
-          const fileClassName = checkFileType(fileType);
-          return <div data-id={_id} key={fileName} className="data">
-            <span className="date">{date}</span>
-            <a href={`${process.env.REACT_APP_DB_CONNECT}${filePath}`} target="_blank" rel="noreferrer">
-              <i data-id={id} onMouseEnter={e => handleContextMenuOnFile(e, file)} onMouseLeave={handleContextMenuOnBody} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
-            </a>
-            <span className="title">{fileName}</span>
+        {Object.keys(loggedUser).length !== 0 ? <>
+          {loggedUser.folders[folderIndex].files.length > 0 ? loggedUser.folders[folderIndex].files.map(file => {
+            const { _id, fileName, fileType, date, filePath } = file;
+            let id = filePath.slice(8, filePath.length);
+            const fileClassName = checkFileType(fileType);
+            return <div data-id={_id} key={fileName} className="data">
+              <span className="date">{date}</span>
+              <a href={`${process.env.REACT_APP_DB_CONNECT}${filePath}`} target="_blank" rel="noreferrer">
+                <i data-id={id} onMouseEnter={e => handleContextMenuOnFile(e, file)} onMouseLeave={handleContextMenuOnBody} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
+              </a>
+              <span className="title">{fileName}</span>
 
-          </div>
-        }) : <div className="no-files-message"><i className="fa fa-meh-o" aria-hidden="true"></i><span>There is no files uploaded!</span></div>}
+            </div>
+          }) : <>
+            {(loggedUser.folders[folderIndex].files.length <= 0 && loggedUser.folders.length <= 0) && <div className="no-files-message"><i className="fa fa-meh-o" aria-hidden="true"></i><span>There is no files in <strong>{loggedUser.folders[folderIndex].folderName}</strong> folder</span></div>}
+          </>}
+        </> : <div className="no-files-message"><i className="fa fa-meh-o" aria-hidden="true"></i><span>There is no files uploaded!</span></div>}
         {/* Show all icons */}
         {/* <div className="data">
           <i className="fa fa-folder" aria-hidden="true"></i>
@@ -248,11 +272,19 @@ const MainPage = () => {
             </div>);
         })} */}
       </div>
-
-      <FolderHandler
-        notify={notify}
-        holdSession={holdSession}
-      />
+      {folderIndex === 0 &&
+        <FolderModal
+          notify={notify}
+          holdSession={holdSession}
+          folderOperation={folderOperation}
+          setFolderOperation={setFolderOperation}
+          clickedFolderName={clickedFolderName}
+          setClickedFolderName={setClickedFolderName}
+        />}
+      <div className='tooltip'>
+        <i onClick={handleAddFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
+        <span className="tooltip__text">Add folder</span>
+      </div>
       <ToastContainer position="bottom-right" />
     </main >
   );

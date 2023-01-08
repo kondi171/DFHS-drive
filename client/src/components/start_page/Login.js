@@ -7,12 +7,19 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
   const navigate = useNavigate();
-  const { loggedUser, setLoggedUser } = useContext(AppContext);
+  const { setLoggedUser } = useContext(AppContext);
 
-  const notify = message => {
-    return toast.error(message, {
-      theme: 'colored'
-    });
+  const notify = (message, type) => {
+    switch (type) {
+      case 'success':
+        return toast.success(message, {
+          theme: 'colored'
+        });
+      default:
+        return toast.error(message, {
+          theme: 'colored'
+        });
+    }
   }
   const [mailValue, setMailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -30,7 +37,7 @@ const Login = () => {
       const { mail, password } = data.data;
       if (data.data === 'Incorrect data!') notify('Incorect data!');
       else {
-        navigate('/loading', { state: { infoMessage: 'Logged!', loadingMessage: 'Preparing your files', location: '/access/home' } });
+        navigate('/loading', { state: { infoMessage: 'You have successfully logged in!', loadingMessage: 'Preparing your files', location: '/access/home' } });
         localStorage.setItem('mail', mail);
         localStorage.setItem('password', password);
         setLoggedUser(data.data)
@@ -42,6 +49,10 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem('mail')) navigate('/access/home');
+    if (localStorage.getItem('logoutMessage')) {
+      notify(localStorage.getItem('logoutMessage'), 'success');
+      localStorage.removeItem('logoutMessage');
+    }
   }, []);
 
   return (

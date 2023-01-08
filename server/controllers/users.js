@@ -8,7 +8,7 @@ exports.addUser = async (req, res) => {
   if (isIn) res.send('The specified user already exists!');
   else {
     try {
-      const user = new userModel({ mail: mail, password: hashedPassword });
+      const user = new userModel({ mail: mail, password: hashedPassword, folders: { folderName: "Main", files: [] } });
       await user.save();
       res.send("Registered");
     } catch (error) {
@@ -19,16 +19,17 @@ exports.addUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { mail, password } = req.body;
-  const user = await userModel.find({ mail: mail, password: password });
-  if (user.length > 0) res.send(user[0]);
-  else res.send('Incorrect data!');
-  // Hashed password login
-  // const user = await userModel.find({ mail: mail });
-  // if (user.length > 0) {
-  //   if (await bcrypt.compare(password, user[0].password)) res.send(user[0])
-  // } else res.send('Incorrect data!');
+  const user = await userModel.find({ mail: mail });
+  if (user.length > 0) {
+    if (await bcrypt.compare(password, user[0].password)) res.send(user[0])
+  } else res.send('Incorrect data!');
 }
 
+exports.holdSession = async (req, res) => {
+  const { mail } = req.body;
+  const user = await userModel.find({ mail: mail });
+  res.send(user[0]);
+}
 
 exports.getSpecificUser = async (req, res) => {
 
@@ -82,7 +83,26 @@ exports.addFolder = async (req, res) => {
     res.send(true);
   }
   else res.send(false);
+}
 
+exports.renameFolder = async (req, res) => {
+  const { mail, oldFolderName, newFolderName } = req.body;
+  const user = await userModel.findOne({ mail: mail });
+  const folders = user.folders.filter(folder => folder.folderName === newFolderName);
+  if (folders.length === 0) {
+    const renameFolder = await userModel.updateOne(
+      { mail: mail, 'folders.folderName': oldFolderName },
+      { $set: { 'folders.$.folderName': newFolderName } });
+    res.send(true);
+  } else res.send(false);
+}
+exports.deleteFolder = async (req, res) => {
+  const { mail, folderName } = req.body;
+  const deleteFolder = await userModel.updateOne(
+    { mail: mail },
+    { $pull: { folders: { folderName: folderName } } }
+  );
+  res.send(true);
 }
 
 const cutFileType = filename => {

@@ -71,6 +71,10 @@
 
       span {
         margin-left: 20px;
+
+        strong {
+          color: $lightColor;
+        }
       }
     }
 
@@ -80,6 +84,7 @@
       align-items: center;
       flex-direction: column;
       width: 350px;
+      height: 15vmax;
 
       .fa {
         font-size: 8rem;
@@ -135,7 +140,11 @@
         }
 
         &.fa-folder {
-          color: $supportColor;
+          color: $primaryColor;
+
+          &:hover {
+            color: $supportColor;
+          }
         }
 
         &.fa-cogs {

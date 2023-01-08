@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react';
-import { NavLink, Navigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { AppContext } from '../AppContext';
 const Nav = () => {
+  const navigate = useNavigate();
   const { setLoggedUser } = useContext(AppContext);
   const [logged, setLogged] = useState(true);
 
@@ -10,6 +11,7 @@ const Nav = () => {
     setLogged(false);
     localStorage.removeItem('mail');
     localStorage.removeItem('password');
+    localStorage.setItem('logoutMessage', 'You have successfully logged out!');
   }
   return (
     <nav className='navigation'>
@@ -30,7 +32,7 @@ const Nav = () => {
         <i className="fa fa-sign-out" aria-hidden="true"></i>
         <span className="tooltip-text">Logout</span>
       </NavLink>
-      {!logged && <Navigate to="/" />}
+      {!logged && navigate('/')}
     </nav>
   );
 }

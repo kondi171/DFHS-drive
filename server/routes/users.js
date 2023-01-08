@@ -3,19 +3,25 @@ const app = express();
 const upload = require('../middleware/upload');
 const userController = require('../controllers/users');
 
-// Register User
-app.put('/API/users', userController.addUser);
 
-// Login User
-app.post('/API/users', userController.loginUser);
+app.put('/API/users', userController.addUser); // Register User
 
-// Get Specific User
-app.get('/API/users/:id', userController.getSpecificUser);
+app.post('/API/users', userController.loginUser); // Login User
 
-app.post('/API/file/upload', upload.single('file'), userController.fileUpload);
+app.get('/API/users/:id', userController.getSpecificUser); // Get Specific User
 
-app.post('/API/folder/add', userController.addFolder);
+app.post('/API/user', userController.holdSession); // Hold logged user Session until logout
 
-app.delete('/API/file/delete', userController.deleteFile);
+app.post('/API/file', upload.single('file'), userController.fileUpload); // Upload File
+
+app.delete('/API/file', userController.deleteFile); // Delete File
+
+app.post('/API/folder', userController.addFolder); // Add Folder
+
+app.patch('/API/folder', userController.renameFolder); // Rename Folder
+
+app.delete('/API/folder', userController.deleteFolder); // Delete Folder
+
+
 
 module.exports = app;

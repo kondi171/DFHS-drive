@@ -38,7 +38,7 @@ const AddFilesPage = () => {
   return (
     <main className="access-page add-files">
       <h2>Add to <span>{loggedUser.mail}</span> repository</h2>
-      <form onSubmit={setInfoAboutUploadedFile} className="add-files-form" action={`${process.env.REACT_APP_DB_CONNECT}API/file/upload`} encType="multipart/form-data" method="POST">
+      <form onSubmit={setInfoAboutUploadedFile} className="add-files-form" action={`${process.env.REACT_APP_DB_CONNECT}API/file`} encType="multipart/form-data" method="POST">
         <div className="folder-select">
           <h3>Select folder</h3>
           <div className="folders">

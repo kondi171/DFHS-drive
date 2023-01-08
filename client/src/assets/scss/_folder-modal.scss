@@ -1,4 +1,4 @@
-.add-folder-overlay {
+.folder-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@
   transition-duration: .4s;
   opacity: 0;
 
-  .add-folder-modal {
+  .folder-modal {
     position: fixed;
     top: 35%;
     left: 50%;
@@ -40,6 +40,18 @@
       font-size: 4vmin;
       margin: 2vmin;
       color: $primaryColor;
+
+      strong {
+        color: $lightColor;
+        font-family: $titleFont;
+      }
+    }
+
+    h4 {
+      font-size: 3vmin;
+      margin: 2vmin;
+      text-align: center;
+      color: $lightColor;
     }
 
 
