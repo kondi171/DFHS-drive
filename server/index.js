@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config();
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
@@ -17,11 +18,10 @@ if (cluster.isMaster) {
   const mongoose = require("mongoose");
   const cors = require('cors');
   const bodyParser = require('body-parser');
-  const PORT = process.env.PORT || 4000;
+  const PORT = dotenv.parsed.PORT || 4000;
   const app = express();
   const usersRouter = require('./routes/users');
   const db = mongoose.connection;
-
   db.on("error", console.error.bind(console, "connection error: "));
   db.once("open", function () {
     console.log("Connected successfully");

@@ -93,13 +93,13 @@
     }
   }
 
-  // *** HTML *** 
+  // *** HTML ***
   // <div className='tooltip'>
   //    <i className='fa fa-icon tooltip__icon' aria-hidden="true"></i>
   //    <span className="tooltip__text">Home</span>
   // </div>
 
-  // *** SCSS *** 
+  // *** SCSS ***
   // insert @include directive to parent element
   // @include tooltip($primaryColor, $darkColor, "bottom");
 }

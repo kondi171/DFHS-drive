@@ -19,6 +19,8 @@ app.delete('/API/file', userController.deleteFile); // Delete File
 
 app.patch('/API/file', userController.shareFile); // Share File
 
+app.post('/API/unlink', userController.unlinkFile); // Unlink File
+
 app.post('/API/folder', userController.addFolder); // Add Folder
 
 app.patch('/API/folder', userController.renameFolder); // Rename Folder

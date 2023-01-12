@@ -23,7 +23,6 @@ form {
     margin-top: 100px;
     margin-bottom: 50px;
     font-family: $titleFont;
-
   }
 
   input {
@@ -85,7 +84,6 @@ form {
 
     &:hover {
       cursor: pointer;
-      // background-color: $secondaryColor;
       box-shadow: 0 0 10px 0 $primaryColor;
       transform: scale(1.1);
       letter-spacing: 4px;

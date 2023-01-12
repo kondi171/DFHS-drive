@@ -4,10 +4,13 @@ import { AppContext } from '../AppContext';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+
 const Login = () => {
 
   const navigate = useNavigate();
   const { setLoggedUser } = useContext(AppContext);
+  const [mailValue, setMailValue] = useState('');
+  const [passwordValue, setPasswordValue] = useState('');
 
   const notify = (message, type) => {
     switch (type) {
@@ -21,10 +24,8 @@ const Login = () => {
         });
     }
   }
-  const [mailValue, setMailValue] = useState('');
-  const [passwordValue, setPasswordValue] = useState('');
-  const handleLogin = e => {
 
+  const handleLogin = e => {
     axios({
       method: 'POST',
       url: `${process.env.REACT_APP_DB_CONNECT}API/users`,

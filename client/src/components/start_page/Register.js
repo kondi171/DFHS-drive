@@ -12,7 +12,6 @@ const Register = () => {
   }
 
   const navigate = useNavigate();
-
   const [mailValue, setMailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
 
@@ -27,6 +26,7 @@ const Register = () => {
       return false;
     }
   }
+
   const validatePass1 = () => {
     const pass1 = document.getElementById('pass1').value;
     const pass1Regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -38,6 +38,7 @@ const Register = () => {
       return false;
     }
   }
+
   const validatePass2 = () => {
     const pass1 = document.getElementById('pass1').value;
     const pass2 = document.getElementById('pass2').value;
@@ -47,9 +48,9 @@ const Register = () => {
       return false;
     }
   }
+
   const handleRegister = e => {
     e.preventDefault();
-
     const pass2 = validatePass2();
     const pass1 = validatePass1();
     const mail = validateMail();

@@ -265,16 +265,8 @@
           box-shadow: 0px 10px 10px -10px $primaryColor;
         }
       }
-
-      input[type='file'] {
-        // display: none;
-      }
-
-
     }
   }
-
-
 
   @include tooltip($primaryColor, $darkColor, "right");
 
@@ -310,16 +302,6 @@
       color: $primaryColor;
       transition-duration: .4s;
 
-      // &:hover {
-      //   cursor: pointer;
-      //   color: $secondaryColor;
-      // }
     }
   }
-
-
-
-
-
-
 }

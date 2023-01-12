@@ -1,5 +1,5 @@
 import axios from 'axios';
-const Modal = ({ notify, holdSession, operation, setOperation, clickedFileName, setClickedFileName, file, setFile }) => {
+const Modal = ({ notify, holdSession, operation, setOperation, clickedFileName, setClickedFileName, file }) => {
 
   const handleAddFolder = e => {
     const folderName = e.target.previousSibling.value;

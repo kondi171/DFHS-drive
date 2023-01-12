@@ -15,7 +15,6 @@ var upload = multer({
     storage: storage,
     fileFilter: function (req, file, callback) {
         callback(null, true)
-        // console.log('uploaded');
     },
     limits: {
         fileSize: 1024 * 1024 * 2000

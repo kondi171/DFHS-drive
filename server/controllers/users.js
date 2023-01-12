@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const fs = require('fs');
 const userModel = require('../models/users');
+const dotenv = require('dotenv').config();
 
 exports.addUser = async (req, res) => {
   const { mail, password } = req.body;
@@ -41,16 +42,26 @@ exports.fileUpload = async (req, res) => {
   const user = await userModel.findOne({ mail: mail });
   const findFile = user.folders[0].files.filter(file => file.fileName === fileName);
   if (findFile.length > 0) {
-    res.redirect('http://localhost:3000/access/home/?success=false');
+    res.redirect(`${dotenv.parsed.REACT_APP_CLIENT}access/home/?success=false&file=${file.path}`);
   } else {
     const today = new Date();
     const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
-    const newFile = await userModel.updateOne(
+    await userModel.updateOne(
       { mail: mail, 'folders.folderName': folderName },
       { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
     )
-    res.redirect('http://localhost:3000/access/home/?success=true');
+    res.redirect(`${dotenv.parsed.REACT_APP_CLIENT}access/home/?success=true`);
   }
+}
+
+exports.unlinkFile = async (req, res) => {
+  const path = req.body.path;
+  fs.unlink(path, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
 }
 
 exports.deleteFile = async (req, res) => {
@@ -156,6 +167,7 @@ exports.renameFolder = async (req, res) => {
     res.send(true);
   } else res.send(false);
 }
+
 exports.deleteFolder = async (req, res) => {
   const { mail, folderName } = req.body;
   await userModel.updateOne(
@@ -179,4 +191,3 @@ const cutFileType = filename => {
   const fileType = '.' + fileTypeReverse.slice(0, atIndex).split("").reverse().join("");
   return fileType;
 }
-

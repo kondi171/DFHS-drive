@@ -80,7 +80,7 @@ const SharedFilesPage = () => {
   }
 
   const handleContextMenuOnFile = (e, file) => {
-    const { _id, fileType, fileName } = file;
+    const { _id, fileType } = file;
     const scope = document.querySelector(`div.data[data-id='${_id}'] i`);
     const previewAvailable = checkForPreview(fileType);
     const menuItems = [
@@ -143,6 +143,7 @@ const SharedFilesPage = () => {
       .then(data => setFormats(data.data))
       .catch(error => console.log(error));
   }, []);
+
   return (
     <main className="access-page">
       <h2>Shared to <span>{login}</span></h2>

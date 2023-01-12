@@ -16,7 +16,6 @@ const MainPage = () => {
   const [operation, setOperation] = useState('');
   const [clickedFileName, setClickedFileName] = useState('');
   const [developerMode, setDeveloperMode] = useState(false);
-  const [reload, setReload] = useState(false);
   const [file, setFile] = useState({});
 
   const notify = (message, type) => {
@@ -103,7 +102,7 @@ const MainPage = () => {
   }
 
   const handleContextMenuOnFile = (e, file) => {
-    const { _id, fileType, fileName } = file;
+    const { _id, fileType } = file;
     const scope = document.querySelector(`div.data[data-id='${_id}'] i`);
     const previewAvailable = checkForPreview(fileType);
     setClickedFileName(file.fileName);
@@ -201,7 +200,19 @@ const MainPage = () => {
       const params = new URLSearchParams(document.location.search);
       const success = params.get("success");
       if (success === 'true') notify('File was uploaded!');
-      else notify('This file is already in your repository', 'error');
+      else {
+        notify('This file is already in your repository', 'error');
+        const file = params.get("file");
+        axios({
+          method: 'POST',
+          url: `${process.env.REACT_APP_DB_CONNECT}API/unlink`,
+          headers: { 'Content-Type': 'application/json' },
+          data: {
+            path: file
+          }
+        })
+          .catch(error => console.log(error));
+      }
       holdSession();
       localStorage.removeItem('infoAboutUploadedFile');
     }
@@ -242,10 +253,6 @@ const MainPage = () => {
       }
     }
   }, [loggedUser, folderIndex]);
-
-  useEffect(() => {
-    setLoggedUser(loggedUser);
-  }, [reload]);
 
   return (
     <main className="access-page">
@@ -291,7 +298,6 @@ const MainPage = () => {
         clickedFileName={clickedFileName}
         setClickedFileName={setClickedFileName}
         file={file}
-        setFile={setFile}
       />
       {folderIndex === 0 && <div className='add-folder tooltip'>
         <i onClick={handleAddFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
