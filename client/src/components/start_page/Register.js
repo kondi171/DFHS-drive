@@ -23,7 +23,7 @@ const Register = () => {
     if (mailValidate) {
       return true;
     } else {
-      notify('Mail must meet the conditions of name@domain.country_code');
+      notify('Mail must meet the conditions of name@domain.country_code!');
       return false;
     }
   }
@@ -34,7 +34,7 @@ const Register = () => {
     if (pass1Validate) {
       return true;
     } else {
-      notify('Minimum eight characters, at least one letter, one number and one special character');
+      notify('Minimum eight characters, at least one letter, one number and one special character!');
       return false;
     }
   }
@@ -43,7 +43,7 @@ const Register = () => {
     const pass2 = document.getElementById('pass2').value;
     if (pass1 === pass2) return true;
     else {
-      notify('Passwords must be equal');
+      notify('Passwords must be equal!');
       return false;
     }
   }

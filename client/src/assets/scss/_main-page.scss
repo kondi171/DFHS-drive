@@ -85,6 +85,7 @@
       flex-direction: column;
       width: 350px;
       height: 15vmax;
+      margin: 2.5vmin;
 
       .fa {
         font-size: 8rem;
@@ -276,6 +277,23 @@
 
 
   @include tooltip($primaryColor, $darkColor, "right");
+
+  .charge-server {
+    position: fixed;
+    bottom: 13vmin;
+    left: 4.5vmin;
+
+    .fa-database {
+      font-size: 3.5vmax;
+      color: $primaryColor;
+      transition-duration: .4s;
+
+      &:hover {
+        cursor: pointer;
+        color: $secondaryColor;
+      }
+    }
+  }
 
   .tooltip {
     position: fixed;

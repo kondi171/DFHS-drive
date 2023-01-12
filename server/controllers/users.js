@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const fs = require('fs');
 const userModel = require('../models/users');
 
 exports.addUser = async (req, res) => {
@@ -31,10 +32,6 @@ exports.holdSession = async (req, res) => {
   res.send(user[0]);
 }
 
-exports.getSpecificUser = async (req, res) => {
-
-}
-
 exports.fileUpload = async (req, res) => {
   const mail = req.body.mail;
   const folderName = req.body.folder;
@@ -43,7 +40,7 @@ exports.fileUpload = async (req, res) => {
   const fileName = file.originalname.replace(cutFileType(fileType), '')
   const today = new Date();
   const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
-  const user = await userModel.updateOne(
+  await userModel.updateOne(
     { mail: mail, 'folders.folderName': folderName },
     { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path, permissions: [] } } }
   )
@@ -53,13 +50,20 @@ exports.fileUpload = async (req, res) => {
 
 exports.deleteFile = async (req, res) => {
   const { mail, fileID } = req.body;
-  const originalName = `uploads\\${fileID}`;
-  const userFile = await userModel.updateOne(
-    { mail: mail, "folders.files.filePath": originalName },
-    { $pull: { "folders.$.files": { filePath: originalName } } }
+  const path = `uploads\\${fileID}`;
+  fs.unlink(path, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+
+  await userModel.updateOne(
+    { mail: mail, "folders.files.filePath": path },
+    { $pull: { "folders.$.files": { filePath: path } } }
   );
   try {
-    res.send(userFile);
+    res.send('File was deleted');
   } catch (error) {
     res.status(500).send(error);
   }
@@ -71,7 +75,7 @@ exports.addFolder = async (req, res) => {
   const folders = user.folders.filter(folder => folder.folderName === folderName);
 
   if (folders.length === 0) {
-    const user = await userModel.updateOne(
+    await userModel.updateOne(
       { mail: mail },
       {
         $push: {
@@ -91,7 +95,7 @@ exports.renameFolder = async (req, res) => {
   const user = await userModel.findOne({ mail: mail });
   const folders = user.folders.filter(folder => folder.folderName === newFolderName);
   if (folders.length === 0) {
-    const renameFolder = await userModel.updateOne(
+    await userModel.updateOne(
       { mail: mail, 'folders.folderName': oldFolderName },
       { $set: { 'folders.$.folderName': newFolderName } });
     res.send(true);
@@ -99,7 +103,7 @@ exports.renameFolder = async (req, res) => {
 }
 exports.deleteFolder = async (req, res) => {
   const { mail, folderName } = req.body;
-  const deleteFolder = await userModel.updateOne(
+  await userModel.updateOne(
     { mail: mail },
     { $pull: { folders: { folderName: folderName } } }
   );

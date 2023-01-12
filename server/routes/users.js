@@ -9,8 +9,6 @@ app.put('/API/users', userController.addUser); // Register User
 
 app.post('/API/users', userController.loginUser); // Login User
 
-app.get('/API/users/:id', userController.getSpecificUser); // Get Specific User
-
 app.post('/API/user', userController.holdSession); // Hold logged user Session until logout
 
 app.post('/API/file', upload.single('file'), userController.fileUpload); // Upload File
