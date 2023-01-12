@@ -6,19 +6,18 @@ const AddFilesPage = () => {
   const { loggedUser, setLoggedUser } = useContext(AppContext);
   const [login, setLogin] = useState('');
   const [activeFolder, setActiveFolder] = useState('Main');
+
   const holdSession = () => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_DB_CONNECT}API/users`,
+      url: `${process.env.REACT_APP_DB_CONNECT}API/user`,
       headers: { 'Content-Type': 'application/json' },
       data: {
         mail: localStorage.getItem('mail'),
-        password: localStorage.getItem('password'),
       }
     }).then(data => {
-      const { mail, password } = data.data;
+      const { mail } = data.data;
       localStorage.setItem('mail', mail);
-      localStorage.setItem('password', password);
       setLoggedUser(data.data);
     })
       .catch(error => console.log(error));
@@ -28,7 +27,6 @@ const AddFilesPage = () => {
   const handleSelectFolder = e => {
     const folders = document.querySelectorAll('.folder');
     folders.forEach(folder => folder.classList.remove('active'));
-    console.log(e.target.dataset.id);
     e.target.parentElement.classList.add('active');
     setActiveFolder(e.target.dataset.id);
   }
@@ -62,8 +60,8 @@ const AddFilesPage = () => {
         </div>
         <input readOnly type="text" name="mail" value={loggedUser.mail} style={{ display: 'none' }} />
         <input readOnly type="text" name="folder" value={activeFolder} style={{ display: 'none' }} />
-        <input type="file" name="file" />
-        <button >Upload file</button>
+        <input id="fileInput" type="file" name="file" />
+        <button>Upload file</button>
       </form>
     </main >
   );

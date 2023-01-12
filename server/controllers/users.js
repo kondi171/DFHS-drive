@@ -9,7 +9,7 @@ exports.addUser = async (req, res) => {
   if (isIn) res.send('The specified user already exists!');
   else {
     try {
-      const user = new userModel({ mail: mail, password: hashedPassword, folders: { folderName: "Main", files: [] } });
+      const user = new userModel({ mail: mail.toLowerCase(), password: hashedPassword, folders: { folderName: "Main", files: [] } });
       await user.save();
       res.send("Registered");
     } catch (error) {
@@ -20,7 +20,7 @@ exports.addUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { mail, password } = req.body;
-  const user = await userModel.find({ mail: mail });
+  const user = await userModel.find({ mail: mail.toLowerCase() });
   if (user.length > 0) {
     if (await bcrypt.compare(password, user[0].password)) res.send(user[0])
   } else res.send('Incorrect data!');
@@ -37,20 +37,28 @@ exports.fileUpload = async (req, res) => {
   const folderName = req.body.folder;
   const file = req.file;
   const fileType = cutFileType(file.originalname);
-  const fileName = file.originalname.replace(cutFileType(fileType), '')
-  const today = new Date();
-  const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
-  await userModel.updateOne(
-    { mail: mail, 'folders.folderName': folderName },
-    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
-  )
-
-  res.redirect('http://localhost:3000/access/home');
+  const fileName = file.originalname.replace(cutFileType(fileType), '');
+  const user = await userModel.findOne({ mail: mail });
+  const findFile = user.folders[0].files.filter(file => file.fileName === fileName);
+  if (findFile.length > 0) {
+    res.redirect('http://localhost:3000/access/home/?success=false');
+  } else {
+    const today = new Date();
+    const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
+    const newFile = await userModel.updateOne(
+      { mail: mail, 'folders.folderName': folderName },
+      { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
+    )
+    res.redirect('http://localhost:3000/access/home/?success=true');
+  }
 }
 
 exports.deleteFile = async (req, res) => {
   const { mail, fileID } = req.body;
   const path = `uploads\\${fileID}`;
+  await userModel.updateMany({},
+    { $pull: { sharedFiles: { filePath: path } } }
+  );
   fs.unlink(path, (err) => {
     if (err) {
       console.error(err);
@@ -81,38 +89,30 @@ exports.shareFile = async (req, res) => {
     filePath: filePath,
     sharingUser: mail
   }
-
+  let announcement = '';
   if (findUser) {
-    if (findUser.mail === mail) {
-      try {
-        res.send("You can't share files with yourself!");
-      } catch (error) {
-        res.status(500).send(error);
-      }
-    } else {
-      // here add to db
-      await userModel.updateOne(
-        { mail: shareToUser },
-        { $push: { sharedFiles: sharedFile } }
-      );
-      try {
-        res.send("Shared");
-      } catch (error) {
-        res.status(500).send(error);
-      }
+    const sameFile = findUser.sharedFiles.filter(file => file.originalID === sharedFile.originalID);
+    if (sameFile.length > 0) announcement = "This file was shared to this user!";
+    else {
+      if (findUser.mail === mail) announcement = "You can't share files with yourself!";
+      else announcement = "Shared";
     }
-  } else {
-    try {
-      res.send("User with given mail address not found!");
-    } catch (error) {
-      res.status(500).send(error);
-    }
+  } else announcement = "User with given mail address not found!";
+  if (announcement === "Shared") {
+    await userModel.updateOne(
+      { mail: shareToUser },
+      { $push: { sharedFiles: sharedFile } }
+    );
+  }
+  try {
+    res.send(announcement);
+  } catch (error) {
+    res.status(500).send(error);
   }
 }
 
 exports.deleteSharedFile = async (req, res) => {
   const { mail, fileID } = req.body;
-  console.log(fileID);
   await userModel.updateOne(
     { mail: mail, 'sharedFiles.$.originalID': fileID },
     { $pull: { sharedFiles: { originalID: fileID } } }

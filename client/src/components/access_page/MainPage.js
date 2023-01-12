@@ -87,13 +87,6 @@ const MainPage = () => {
     });
   }
 
-  const handleContextMenuOnBody = () => {
-    const scope = document.getElementById('mainPage');
-    const menuItems = [];
-    vanillaContextMenu(menuItems, scope);
-    // new VanillaContextMenu({});
-  }
-
   const handleContextMenuOnFilesContainer = () => {
     const scope = document.querySelector('.files');
     const menuItems = [
@@ -138,13 +131,8 @@ const MainPage = () => {
             }
           })
             .catch(error => console.log(error));
-
-          // const indexOf = loggedUser.folders[folderIndex].files.findIndex(file => file.fileName === fileName);
-          // loggedUser.folders[folderIndex].files.splice(indexOf, 1);
-          // setLoggedUser(loggedUser);
-          setReload(!reload);
-          // Reload state here!
-          notify(`File ${fileName}${fileType} was deleted!`);
+          localStorage.setItem('infoAboutDeletedFile', true);
+          window.location.reload();
         },
         iconClass: 'fa fa-trash'
       },
@@ -210,13 +198,20 @@ const MainPage = () => {
 
   useEffect(() => {
     if (localStorage.getItem('infoAboutUploadedFile')) {
-      notify('File was uploaded!');
+      const params = new URLSearchParams(document.location.search);
+      const success = params.get("success");
+      if (success === 'true') notify('File was uploaded!');
+      else notify('This file is already in your repository', 'error');
+      holdSession();
       localStorage.removeItem('infoAboutUploadedFile');
     }
-    axios('../json/formats.json')
+    if (localStorage.getItem('infoAboutDeletedFile')) {
+      notify(`File was deleted!`);
+      localStorage.removeItem('infoAboutDeletedFile');
+    }
+    axios('../../json/formats.json')
       .then(data => setFormats(data.data))
       .catch(error => console.log(error));
-    handleContextMenuOnBody();
   }, []);
 
   const chargeServer = () => {
@@ -253,7 +248,7 @@ const MainPage = () => {
   }, [reload]);
 
   return (
-    <main onMouseEnter={handleContextMenuOnBody} id="mainPage" className="access-page">
+    <main className="access-page">
       <h2><span>{login}</span> repository</h2>
       {folderIndex !== 0 &&
         <div className="breadcrumbs">
@@ -287,38 +282,21 @@ const MainPage = () => {
           })}
         </>}
         {emptyRepositoryMessage && <div className="no-files-message"><i className="fa fa-meh-o" aria-hidden="true"></i><span>There is no files in <strong>{Object.keys(loggedUser).length !== 0 && loggedUser?.folders[folderIndex]?.folderName}</strong> folder</span></div>}
-        {/* Show all icons */}
-        {/* <div className="data">
-          <i className="fa fa-folder" aria-hidden="true"></i>
-          <span>Folder</span>
-        </div>
-        {formats.map(format => {
-          return (
-            <div className="data">
-              <i className={`fa fa-${format.className}`} aria-hidden="true"></i>
-              <span>{format.format}</span>
-            </div>);
-        })} */}
       </div>
-      {
-        folderIndex === 0 &&
-        <Modal
-          notify={notify}
-          holdSession={holdSession}
-          operation={operation}
-          setOperation={setOperation}
-          clickedFileName={clickedFileName}
-          setClickedFileName={setClickedFileName}
-          file={file}
-          setFile={setFile}
-        />
-      }
-      {
-        folderIndex === 0 && <div className='add-folder tooltip'>
-          <i onClick={handleAddFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
-          <span className="tooltip__text">Add folder</span>
-        </div>
-      }
+      <Modal
+        notify={notify}
+        holdSession={holdSession}
+        operation={operation}
+        setOperation={setOperation}
+        clickedFileName={clickedFileName}
+        setClickedFileName={setClickedFileName}
+        file={file}
+        setFile={setFile}
+      />
+      {folderIndex === 0 && <div className='add-folder tooltip'>
+        <i onClick={handleAddFolder} className="fa fa-plus-square add-folder tooltip__icon" aria-hidden="true"></i>
+        <span className="tooltip__text">Add folder</span>
+      </div>}
       {developerMode && <div className='charge-server'>
         <i onClick={chargeServer} className="fa fa-database tooltip__icon" aria-hidden="true"></i>
         <span className="tooltip__text">Charge server</span>

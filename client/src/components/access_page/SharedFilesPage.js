@@ -57,16 +57,14 @@ const SharedFilesPage = () => {
   const holdSession = () => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_DB_CONNECT}API/users`,
+      url: `${process.env.REACT_APP_DB_CONNECT}API/user`,
       headers: { 'Content-Type': 'application/json' },
       data: {
         mail: localStorage.getItem('mail'),
-        password: localStorage.getItem('password'),
       }
     }).then(data => {
-      const { mail, password } = data.data;
+      const { mail } = data.data;
       localStorage.setItem('mail', mail);
-      localStorage.setItem('password', password);
       setLoggedUser(data.data);
     })
       .catch(error => console.log(error));
@@ -80,8 +78,6 @@ const SharedFilesPage = () => {
       menuItems: menuItems
     });
   }
-
-  const handleContextMenuOnBody = () => { new VanillaContextMenu() }
 
   const handleContextMenuOnFile = (e, file) => {
     const { _id, fileType, fileName } = file;
@@ -101,12 +97,8 @@ const SharedFilesPage = () => {
             }
           })
             .catch(error => console.log(error));
-
-          // const indexOf = loggedUser.folders[folderIndex].files.findIndex(file => file.fileName === fileName);
-          // loggedUser.folders[folderIndex].files.splice(indexOf, 1);
-          // setLoggedUser(loggedUser);
-          // Reload state here!
-          notify(`File ${fileName}${fileType} was deleted!`);
+          localStorage.setItem('infoAboutDeletedFile', true);
+          window.location.reload();
         },
         iconClass: 'fa fa-trash'
       },
@@ -141,26 +133,30 @@ const SharedFilesPage = () => {
     } else holdSession();
   }, [loggedUser.mail]);
 
+
   useEffect(() => {
+    if (localStorage.getItem('infoAboutDeletedFile')) {
+      notify(`File was deleted!`);
+      localStorage.removeItem('infoAboutDeletedFile');
+    }
     axios('../json/formats.json')
       .then(data => setFormats(data.data))
       .catch(error => console.log(error));
   }, []);
   return (
-    <main onMouseEnter={handleContextMenuOnBody} id="sharedPage" className="access-page">
+    <main className="access-page">
       <h2>Shared to <span>{login}</span></h2>
       <div className="files">
         {Object.keys(loggedUser).length !== 0 && <>
           {loggedUser?.sharedFiles.length > 0 ? loggedUser.sharedFiles.map(file => {
             const { _id, fileName, fileType, date, filePath, sharingUser, originalID } = file;
-            let id = filePath.slice(8, filePath.length);
             const fileClassName = checkFileType(fileType);
             return <div data-id={_id} key={_id} className="data">
               <span className="date">{date}</span>
               <a href={`${process.env.REACT_APP_DB_CONNECT}${filePath}`} target="_blank" rel="noreferrer">
                 <i data-id={originalID} onMouseEnter={e => handleContextMenuOnFile(e, file)} className={`fa fa-${fileClassName}`} aria-hidden="true"></i>
               </a>
-              <span className="title">{fileName} / <span>{sharingUser}</span></span>
+              <span className="title">{fileName} <br /> <span>{sharingUser}</span></span>
             </div>
           }) : <div className="no-files-message"><i className="fa fa-meh-o" aria-hidden="true"></i><span>No Shared Files!</span></div>}
         </>}

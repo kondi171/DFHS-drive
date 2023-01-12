@@ -125,7 +125,6 @@ const Modal = ({ notify, holdSession, operation, setOperation, clickedFileName, 
         }
       })
         .then(data => {
-          console.log(data);
           if (data.data === 'Shared') {
             const overlay = document.querySelector('.overlay');
             const modal = document.querySelector('.modal');
@@ -134,6 +133,7 @@ const Modal = ({ notify, holdSession, operation, setOperation, clickedFileName, 
             modal.style.transform = 'scale(0) translate(-50%, -50%)';
             notify(`File ${clickedFileName} was shared to ${userMail}!`);
             holdSession();
+            e.target.previousSibling.value = '';
           } else {
             notify(`${data.data}`, 'error');
           }
