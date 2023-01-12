@@ -19,8 +19,18 @@ const UserSchema = new mongoose.Schema({
           fileType: String,
           date: String,
           filePath: String,
+          permissions: []
         }
       ]
+    }
+  ],
+  sharedFiles: [
+    {
+      primaryUser: String,
+      fileName: String,
+      fileType: String,
+      date: String,
+      filePath: String,
     }
   ]
 });

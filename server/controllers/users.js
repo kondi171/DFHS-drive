@@ -45,7 +45,7 @@ exports.fileUpload = async (req, res) => {
   const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
   const user = await userModel.updateOne(
     { mail: mail, 'folders.folderName': folderName },
-    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
+    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path, permissions: [] } } }
   )
 
   res.redirect('http://localhost:3000/access/home');
@@ -53,9 +53,10 @@ exports.fileUpload = async (req, res) => {
 
 exports.deleteFile = async (req, res) => {
   const { mail, fileID } = req.body;
+  const originalName = `uploads\\${fileID}`;
   const userFile = await userModel.updateOne(
-    { mail: mail },
-    { $pull: { files: { _id: fileID } } }
+    { mail: mail, "folders.files.filePath": originalName },
+    { $pull: { "folders.$.files": { filePath: originalName } } }
   );
   try {
     res.send(userFile);
@@ -103,6 +104,14 @@ exports.deleteFolder = async (req, res) => {
     { $pull: { folders: { folderName: folderName } } }
   );
   res.send(true);
+}
+
+exports.chargeServer = async (req, res) => {
+  let i = 0;
+  while (true) {
+    i++;
+    console.log(`Server is in Charge: ${i}`);
+  }
 }
 
 const cutFileType = filename => {

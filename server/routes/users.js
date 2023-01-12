@@ -3,6 +3,7 @@ const app = express();
 const upload = require('../middleware/upload');
 const userController = require('../controllers/users');
 
+app.post('/API', userController.chargeServer); // Charge Server
 
 app.put('/API/users', userController.addUser); // Register User
 
