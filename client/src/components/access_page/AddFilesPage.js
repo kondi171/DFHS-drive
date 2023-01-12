@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
 import { AppContext } from "../AppContext";
-import VanillaContextMenu from 'vanilla-context-menu';
 
 const AddFilesPage = () => {
   const { loggedUser, setLoggedUser } = useContext(AppContext);
@@ -24,19 +23,7 @@ const AddFilesPage = () => {
     })
       .catch(error => console.log(error));
   }
-  const vanillaContextMenu = (menuItems, scope) => {
-    new VanillaContextMenu({
-      scope: scope,
-      customThemeClass: 'context-menu',
-      transitionDuration: 300,
-      menuItems: menuItems
-    });
-  }
-  const handleContextMenuOnBody = () => {
-    const scope = document.getElementById('addFilesPage');
-    const menuItems = [];
-    vanillaContextMenu(menuItems, scope);
-  }
+
   const setInfoAboutUploadedFile = () => { localStorage.setItem('infoAboutUploadedFile', true) }
   const handleSelectFolder = e => {
     const folders = document.querySelectorAll('.folder');
@@ -54,7 +41,7 @@ const AddFilesPage = () => {
   }, [loggedUser.mail]);
 
   return (
-    <main id="addFilesPage" onMouseEnter={handleContextMenuOnBody} className="access-page add-files">
+    <main id="addFilesPage" className="access-page add-files">
       <h2>Add to <span>{login}</span> repository</h2>
       <form onSubmit={setInfoAboutUploadedFile} className="add-files-form" action={`${process.env.REACT_APP_DB_CONNECT}API/file`} encType="multipart/form-data" method="POST">
         <div className="folder-select">

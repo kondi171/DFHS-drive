@@ -42,7 +42,7 @@ exports.fileUpload = async (req, res) => {
   const date = `${today.getDate() > 10 ? today.getDate() : '0' + today.getDate()}.${today.getMonth() + 1 > 10 ? today.getMonth() + 1 : '0' + (today.getMonth() + 1)}.${today.getFullYear()} ${today.getHours() > 10 ? today.getHours() : '0' + today.getHours()}:${today.getMinutes() > 10 ? today.getMinutes() : '0' + today.getMinutes()}`
   await userModel.updateOne(
     { mail: mail, 'folders.folderName': folderName },
-    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path, permissions: [] } } }
+    { $push: { 'folders.$.files': { fileName: fileName, fileType: fileType, date: date, filePath: file.path } } }
   )
 
   res.redirect('http://localhost:3000/access/home');
@@ -64,6 +64,61 @@ exports.deleteFile = async (req, res) => {
   );
   try {
     res.send('File was deleted');
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+exports.shareFile = async (req, res) => {
+  const { mail, shareToUser, file } = req.body;
+  const { fileName, fileType, date, filePath, _id } = file;
+  const findUser = await userModel.findOne({ mail: shareToUser });
+  const sharedFile = {
+    originalID: _id,
+    fileName: fileName,
+    fileType: fileType,
+    date: date,
+    filePath: filePath,
+    sharingUser: mail
+  }
+
+  if (findUser) {
+    if (findUser.mail === mail) {
+      try {
+        res.send("You can't share files with yourself!");
+      } catch (error) {
+        res.status(500).send(error);
+      }
+    } else {
+      // here add to db
+      await userModel.updateOne(
+        { mail: shareToUser },
+        { $push: { sharedFiles: sharedFile } }
+      );
+      try {
+        res.send("Shared");
+      } catch (error) {
+        res.status(500).send(error);
+      }
+    }
+  } else {
+    try {
+      res.send("User with given mail address not found!");
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+}
+
+exports.deleteSharedFile = async (req, res) => {
+  const { mail, fileID } = req.body;
+  console.log(fileID);
+  await userModel.updateOne(
+    { mail: mail, 'sharedFiles.$.originalID': fileID },
+    { $pull: { sharedFiles: { originalID: fileID } } }
+  );
+  try {
+    res.send("delete");
   } catch (error) {
     res.status(500).send(error);
   }

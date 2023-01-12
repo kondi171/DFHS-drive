@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../AppContext";
+import { AppContext } from "../AppContext";
 import axios from 'axios';
-import FolderModal, { handleFolderModal } from "./FolderModal";
+import Modal, { handleModal } from "../features/Modal";
 import VanillaContextMenu from 'vanilla-context-menu';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,10 +13,12 @@ const MainPage = () => {
   const [emptyRepositoryMessage, setEmptyRepositoryMessage] = useState(true);
   const [formats, setFormats] = useState(null);
   const [folderIndex, setFolderIndex] = useState(0);
-  const [folderOperation, setFolderOperation] = useState('');
-  const [clickedFolderName, setClickedFolderName] = useState('');
-  const [developerMode, setDeveloperMode] = useState(true);
+  const [operation, setOperation] = useState('');
+  const [clickedFileName, setClickedFileName] = useState('');
+  const [developerMode, setDeveloperMode] = useState(false);
   const [reload, setReload] = useState(false);
+  const [file, setFile] = useState({});
+
   const notify = (message, type) => {
     switch (type) {
       case 'error':
@@ -46,6 +48,7 @@ const MainPage = () => {
     if (excludeUndefined.length === 0) return 'file-o';
     else return excludeUndefined[0];
   }
+
   const checkForPreview = format => {
     const databaseFormats = formats.filter(format => format.format === "database").map(format => format.extensions);
     const imageFormats = formats.filter(format => format.format === "image").map(format => format.extensions);
@@ -58,6 +61,7 @@ const MainPage = () => {
     if (checkCompatibility.length > 0) return true;
     else return false;
   }
+
   const holdSession = () => {
     axios({
       method: 'POST',
@@ -87,6 +91,7 @@ const MainPage = () => {
     const scope = document.getElementById('mainPage');
     const menuItems = [];
     vanillaContextMenu(menuItems, scope);
+    // new VanillaContextMenu({});
   }
 
   const handleContextMenuOnFilesContainer = () => {
@@ -96,8 +101,8 @@ const MainPage = () => {
         label: 'Create folder',
         iconClass: 'fa fa-folder-open',
         callback: () => {
-          handleFolderModal();
-          setFolderOperation('ADD');
+          handleModal();
+          setOperation('ADD');
         }
       }
     ];
@@ -108,10 +113,15 @@ const MainPage = () => {
     const { _id, fileType, fileName } = file;
     const scope = document.querySelector(`div.data[data-id='${_id}'] i`);
     const previewAvailable = checkForPreview(fileType);
+    setClickedFileName(file.fileName);
+    setFile(file);
     const menuItems = [
       {
         label: 'Share',
-        callback: () => console.log('Share'),
+        callback: () => {
+          handleModal();
+          setOperation("SHARE");
+        },
         iconClass: 'fa fa-share-alt'
       },
       'hr',
@@ -164,14 +174,14 @@ const MainPage = () => {
 
   const handleContextMenuOnFolder = (e, folder) => {
     const scope = document.querySelector(`div.data[data-name='${folder.folderName}']>i`);
-    setClickedFolderName(folder.folderName);
+    setClickedFileName(folder.folderName);
     const menuItems = [
       {
         label: 'Rename folder',
         iconClass: 'fa fa-refresh',
         callback: () => {
-          handleFolderModal();
-          setFolderOperation('RENAME');
+          handleModal();
+          setOperation('RENAME');
         }
       },
       'hr',
@@ -179,8 +189,8 @@ const MainPage = () => {
         label: 'Delete folder',
         iconClass: 'fa fa-trash',
         callback: () => {
-          handleFolderModal();
-          setFolderOperation('DELETE');
+          handleModal();
+          setOperation('DELETE');
         }
       }
     ];
@@ -192,10 +202,12 @@ const MainPage = () => {
     const folderIndex = loggedUser.folders.findIndex(folder => folder.folderName === folderName);
     setFolderIndex(folderIndex);
   }
+
   const handleAddFolder = () => {
-    handleFolderModal();
-    setFolderOperation('ADD');
+    handleModal();
+    setOperation('ADD');
   }
+
   useEffect(() => {
     if (localStorage.getItem('infoAboutUploadedFile')) {
       notify('File was uploaded!');
@@ -206,6 +218,7 @@ const MainPage = () => {
       .catch(error => console.log(error));
     handleContextMenuOnBody();
   }, []);
+
   const chargeServer = () => {
     console.log('Server is in charge');
     axios({
@@ -215,6 +228,7 @@ const MainPage = () => {
     })
       .catch(error => console.log(error));
   }
+
   useEffect(() => {
     if (loggedUser.mail) {
       const atIndex = loggedUser.mail.indexOf('@');
@@ -233,9 +247,11 @@ const MainPage = () => {
       }
     }
   }, [loggedUser, folderIndex]);
+
   useEffect(() => {
     setLoggedUser(loggedUser);
   }, [reload]);
+
   return (
     <main onMouseEnter={handleContextMenuOnBody} id="mainPage" className="access-page">
       <h2><span>{login}</span> repository</h2>
@@ -286,13 +302,15 @@ const MainPage = () => {
       </div>
       {
         folderIndex === 0 &&
-        <FolderModal
+        <Modal
           notify={notify}
           holdSession={holdSession}
-          folderOperation={folderOperation}
-          setFolderOperation={setFolderOperation}
-          clickedFolderName={clickedFolderName}
-          setClickedFolderName={setClickedFolderName}
+          operation={operation}
+          setOperation={setOperation}
+          clickedFileName={clickedFileName}
+          setClickedFileName={setClickedFileName}
+          file={file}
+          setFile={setFile}
         />
       }
       {

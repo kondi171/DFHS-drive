@@ -1,4 +1,4 @@
-.folder-overlay {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@
   transition-duration: .4s;
   opacity: 0;
 
-  .folder-modal {
+  .modal {
     position: fixed;
     top: 35%;
     left: 50%;
@@ -54,6 +54,12 @@
       color: $lightColor;
     }
 
+    label {
+      display: block;
+      text-align: center;
+      color: $lightColor;
+      font-size: 2vmin;
+    }
 
     input {
       display: block;

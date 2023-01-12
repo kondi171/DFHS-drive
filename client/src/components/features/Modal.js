@@ -1,5 +1,5 @@
 import axios from 'axios';
-const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation, clickedFolderName, setClickedFolderName }) => {
+const Modal = ({ notify, holdSession, operation, setOperation, clickedFileName, setClickedFileName, file, setFile }) => {
 
   const handleAddFolder = e => {
     const folderName = e.target.previousSibling.value;
@@ -18,8 +18,8 @@ const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation,
       })
         .then(data => {
           if (data.data === true) {
-            const overlay = document.querySelector('.folder-overlay');
-            const modal = document.querySelector('.folder-modal');
+            const overlay = document.querySelector('.overlay');
+            const modal = document.querySelector('.modal');
             overlay.style.opacity = 0;
             overlay.style.zIndex = -15;
             modal.style.transform = 'scale(0) translate(-50%, -50%)';
@@ -47,17 +47,17 @@ const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation,
         data: {
           mail: localStorage.getItem('mail'),
           newFolderName: folderName,
-          oldFolderName: clickedFolderName
+          oldFolderName: clickedFileName
         }
       })
         .then(data => {
           if (data.data === true) {
-            const overlay = document.querySelector('.folder-overlay');
-            const modal = document.querySelector('.folder-modal');
+            const overlay = document.querySelector('.overlay');
+            const modal = document.querySelector('.modal');
             overlay.style.opacity = 0;
             overlay.style.zIndex = -15;
             modal.style.transform = 'scale(0) translate(-50%, -50%)';
-            notify(`${clickedFolderName} folder was renamed to ${folderName}!`);
+            notify(`${clickedFileName} folder was renamed to ${folderName}!`);
             e.target.previousSibling.value = '';
             holdSession();
           } else {
@@ -67,24 +67,25 @@ const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation,
         .catch(error => console.log(error));
     }
   }
-  const handleRemoveFolder = e => {
+
+  const handleRemoveFolder = () => {
     axios({
       method: 'DELETE',
       url: `${process.env.REACT_APP_DB_CONNECT}API/folder`,
       headers: { 'Content-Type': 'application/json' },
       data: {
         mail: localStorage.getItem('mail'),
-        folderName: clickedFolderName
+        folderName: clickedFileName
       }
     })
       .then(data => {
         if (data.data === true) {
-          const overlay = document.querySelector('.folder-overlay');
-          const modal = document.querySelector('.folder-modal');
+          const overlay = document.querySelector('.overlay');
+          const modal = document.querySelector('.modal');
           overlay.style.opacity = 0;
           overlay.style.zIndex = -15;
           modal.style.transform = 'scale(0) translate(-50%, -50%)';
-          notify(`Folder ${clickedFolderName} was deleted!`);
+          notify(`Folder ${clickedFileName} was deleted!`);
           holdSession();
         } else {
           notify('That folder already exists!', 'error');
@@ -92,9 +93,10 @@ const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation,
       })
       .catch(error => console.log(error));
   }
-  const handleFolderModal = (e, open = true) => {
-    const overlay = document.querySelector('.folder-overlay');
-    const modal = document.querySelector('.folder-modal');
+
+  const handleModal = (e, open = true) => {
+    const overlay = document.querySelector('.overlay');
+    const modal = document.querySelector('.modal');
     if (open) {
       overlay.style.opacity = 1;
       overlay.style.zIndex = 15;
@@ -103,39 +105,79 @@ const FolderModal = ({ notify, holdSession, folderOperation, setFolderOperation,
       overlay.style.opacity = 0;
       overlay.style.zIndex = -15;
       modal.style.transform = 'scale(0) translate(-50%, -50%)';
-      setFolderOperation('');
-      setClickedFolderName('');
+      setOperation('');
+      setClickedFileName('');
     }
-  };
+  }
+
+  const handleShareFile = e => {
+    const userMail = e.target.previousSibling.value;
+    if (userMail.length === 0) notify('User mail is empty!', 'error');
+    else {
+      axios({
+        method: 'PATCH',
+        url: `${process.env.REACT_APP_DB_CONNECT}API/file`,
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          mail: localStorage.getItem('mail'),
+          shareToUser: userMail,
+          file: file
+        }
+      })
+        .then(data => {
+          console.log(data);
+          if (data.data === 'Shared') {
+            const overlay = document.querySelector('.overlay');
+            const modal = document.querySelector('.modal');
+            overlay.style.opacity = 0;
+            overlay.style.zIndex = -15;
+            modal.style.transform = 'scale(0) translate(-50%, -50%)';
+            notify(`File ${clickedFileName} was shared to ${userMail}!`);
+            holdSession();
+          } else {
+            notify(`${data.data}`, 'error');
+          }
+        })
+        .catch(error => console.log(error));
+    }
+  }
+
   return (
-    <div className="folder-overlay">
-      <div className="folder-modal">
-        {folderOperation === "ADD" && <>
+    <div className="overlay">
+      <div className="modal">
+        {operation === "ADD" && <>
           <h3>Create folder</h3>
           <input name='folderName' type="text" placeholder="Type folder name..." />
           <button onClick={e => handleAddFolder(e)}>Add folder</button>
-          <i onClick={e => handleFolderModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
+          <i onClick={e => handleModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
         </>}
-        {folderOperation === "RENAME" && <>
-          <h3>Rename <strong>{clickedFolderName}</strong> folder</h3>
+        {operation === "RENAME" && <>
+          <h3>Rename <strong>{clickedFileName}</strong> folder</h3>
           <input name='folderName' type="text" placeholder="Type new folder name..." />
           <button onClick={e => handleRenameFolder(e)}>Rename folder</button>
-          <i onClick={e => handleFolderModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
+          <i onClick={e => handleModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
         </>}
-        {folderOperation === "DELETE" && <>
-          <h3>Delete <strong>{clickedFolderName}</strong> folder</h3>
+        {operation === "DELETE" && <>
+          <h3>Delete <strong>{clickedFileName}</strong> folder</h3>
           <h4>Are you sure?</h4>
-          <button onClick={e => handleRemoveFolder(e)}>Remove folder</button>
-          <i onClick={e => handleFolderModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
+          <button onClick={handleRemoveFolder}>Remove folder</button>
+          <i onClick={e => handleModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
+        </>}
+        {operation === "SHARE" && <>
+          <h3>Share <strong>{clickedFileName}</strong> file</h3>
+          <label htmlFor="fileName">Write the email of the user you want to share the file with:</label>
+          <input name='fileName' type="text" placeholder="Type user mail..." />
+          <button onClick={e => handleShareFile(e)}>Share file</button>
+          <i onClick={e => handleModal(e, false)} className="fa fa-times" aria-hidden="true"></i>
         </>}
       </div>
     </div>
   );
 }
 
-export const handleFolderModal = (e, open = true) => {
-  const overlay = document.querySelector('.folder-overlay');
-  const modal = document.querySelector('.folder-modal');
+export const handleModal = (e, open = true) => {
+  const overlay = document.querySelector('.overlay');
+  const modal = document.querySelector('.modal');
   if (open) {
     overlay.style.opacity = 1;
     overlay.style.zIndex = 15;
@@ -147,4 +189,4 @@ export const handleFolderModal = (e, open = true) => {
   }
 };
 
-export default FolderModal;
+export default Modal;
