@@ -196,6 +196,7 @@ const MainPage = () => {
   }
 
   useEffect(() => {
+    location = "dfhs-drive-frontend.onrender.com"; // only for this deploy!
     if (localStorage.getItem('infoAboutUploadedFile')) {
       const params = new URLSearchParams(document.location.search);
       const success = params.get("success");
